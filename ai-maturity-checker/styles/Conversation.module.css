@@ -1,0 +1,188 @@
+.buttonStack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .bigButton {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .bigButton:hover {
+    transform: scale(1.05);
+  }
+  
+  .gradient_button, .summaryButton {
+    background: linear-gradient(to right, #43139a, #6b1ef3);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    margin: 5px;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .gradient_button:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
+  }  
+
+  .qaCard {
+    margin: 2rem auto;
+    max-width: 600px;
+    text-align: left;
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .chatContainer {
+    max-height: 500px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .messageGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .chatBubble {
+    max-width: 75%;
+    padding: 0.8rem 1.2rem;
+    border-radius: 18px;
+    font-size: 1rem;
+    line-height: 1.4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    word-wrap: break-word;
+  }
+  
+  .leftBubble {
+    align-self: flex-start;
+    background-color: #e0e0e0;
+  }
+  
+  .rightBubble {
+    align-self: flex-end;
+    background-color: #6b1ef3;
+    color: white;
+  }
+  
+  .answersContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .answerButton {
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    width: fit-content;
+  }
+  
+  .backButton {
+    margin-top: 1rem;
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    background: #ddd;
+    border: none;
+    cursor: pointer;
+  }
+
+  .finalInfoContainer {
+    margin-top: 16px;
+  }
+
+  .infoTitle {
+    margin-bottom: 10px;
+  }
+  
+  .extraInfoTextbox {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+    resize: vertical;
+  }
+  
+  .summaryContainer {
+    padding: 1.5rem;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .summaryTitle {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .qaList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .qaItem {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .qaQuestion {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .qaAnswer {
+    font-size: 0.95rem;
+    color: #374151;
+  }
+  
+  .extraInfoTitle {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .extraInfoContent {
+    margin-top: 0.5rem;
+    color: #4b5563;
+  }
+  
+  
+  
