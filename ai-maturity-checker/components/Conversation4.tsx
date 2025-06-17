@@ -110,7 +110,7 @@ export default function Conversation({ file }: Props) {
               ))}
               {index > 0 && (
                 <button className={styles.backButton} onClick={handleBack}>
-                  ← Takaisin
+                  ← Back
                 </button>
               )}
             </div>
@@ -122,9 +122,9 @@ export default function Conversation({ file }: Props) {
         conversation.every((qa) => qa.selectedAnswer) &&
         !showSummary && (
           <div className={styles.finalInfoContainer}>
-            <h2 className={styles.infoTitle}>Lisättävää?</h2>
+            <h2 className={styles.infoTitle}>Anything to add?</h2>
             <textarea
-              placeholder="Kirjoita lisätietoja tähän..."
+              placeholder="Write additional info here..."
               className={styles.extraInfoTextbox}
               value={extraInfo}
               onChange={(e) => setExtraInfo(e.target.value)}
@@ -133,14 +133,14 @@ export default function Conversation({ file }: Props) {
               className={styles.summaryButton}
               onClick={() => setShowSummary(true)}
             >
-              Näytä yhteenveto
+              Show summary
             </button>
           </div>
         )}
 
       {showSummary && (
         <div className={styles.summaryContainer}>
-          <h2 className={styles.summaryTitle}>Yhteenveto</h2>
+          <h2 className={styles.summaryTitle}>Summary</h2>
           <div className={styles.qaList}>
             {conversation.map((qa) => (
               <div key={qa.path} className={styles.qaItem}>
@@ -152,7 +152,7 @@ export default function Conversation({ file }: Props) {
 
           {extraInfo && (
             <>
-              <h3 className={styles.extraInfoTitle}>Lisätietoja:</h3>
+              <h3 className={styles.extraInfoTitle}>Additional info:</h3>
               <p className={styles.extraInfoContent}>{extraInfo}</p>
             </>
           )}

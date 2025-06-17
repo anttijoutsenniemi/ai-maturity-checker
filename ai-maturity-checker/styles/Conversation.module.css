@@ -21,7 +21,7 @@
   }
   
   .gradient_button, .summaryButton {
-    background: linear-gradient(to right, #43139a, #6b1ef3);
+    background: linear-gradient(to right, #071970, #0070f3);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -58,7 +58,7 @@
     border-radius: 12px;
     margin: 0 auto;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
   }
   
   .messageGroup {
@@ -84,7 +84,7 @@
   
   .rightBubble {
     align-self: flex-end;
-    background-color: #6b1ef3;
+    background-color: #0070f3;
     color: white;
   }
   
@@ -184,5 +184,9 @@
     color: #4b5563;
   }
   
+  .extraInfoTextbox {
+    width: 90%;
+    margin: 5px;
+  }
   
   
