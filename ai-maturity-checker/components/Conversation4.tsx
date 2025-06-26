@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/app/lib/supabaseClient';
+import { useParams } from 'next/navigation';
 import styles from '@/styles/Conversation.module.css';
 
 interface Answer {
@@ -34,7 +36,12 @@ export default function Conversation({ file }: Props) {
   const [extraInfo, setExtraInfo] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [pendingFollowUps, setPendingFollowUps] = useState<Question[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('');
+  const params = useParams();
+  const dimension = params?.dimension?.toString().toUpperCase() || 'D1';
 
   useEffect(() => {
     if (!file?.data?.questions) return;
@@ -77,11 +84,98 @@ export default function Conversation({ file }: Props) {
   };
 
   useEffect(() => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current.scrollHeight,
-      behavior: 'smooth',
-    });
+    if (editingIndex === null) {
+      containerRef.current?.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+    else{
+      setEditingIndex(null);
+    }
   }, [conversation, showSummary]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveStatus('');
+  
+    const username = 'jaakko';
+    if (!username) {
+      setSaveStatus('Username not found.');
+      setSaving(false);
+      return;
+    }
+    console.log('Conversation before saving:', conversation);
+    // const answers: Record<string, boolean> = {};
+    // conversation.forEach((qa) => {
+    //   if (qa.selectedAnswer) {
+    //     const questionKey = `${dimension}-${qa.question.id}`;
+    //     answers[questionKey] = qa.selectedAnswer.toLowerCase() === 'yes';
+    //   }
+    // });
+    const answers: Record<string, boolean> = {};
+    conversation.forEach((qa, index) => {
+      if (qa.selectedAnswer) {
+        const questionKey = `${dimension}-Q${index + 1}`;
+        answers[questionKey] = qa.selectedAnswer.toLowerCase() === 'yes';
+      }
+    });
+    
+    console.log('Answers to be saved:', answers);
+  
+    const newDimensionData = {
+      dimension_id: dimension,
+      notes: extraInfo,
+      answers,
+    };
+  
+    // Try to find existing row by username
+    const { data: existingRow, error: fetchError } = await supabase
+      .from('user_answers')
+      .select('id, answers')
+      .eq('username', username)
+      .single();
+  
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      setSaveStatus(`Fetch error: ${fetchError.message}`);
+      setSaving(false);
+      return;
+    }
+  
+    if (existingRow) {
+      // Update the dimension inside the existing answers
+      const updatedAnswers = Array.isArray(existingRow.answers)
+        ? existingRow.answers.filter((d: any) => d.dimension_id !== dimension)
+        : [];
+  
+      updatedAnswers.push(newDimensionData);
+  
+      const { error: updateError } = await supabase
+        .from('user_answers')
+        .update({
+          answers: updatedAnswers,
+          updated_at: new Date(),
+        })
+        .eq('id', existingRow.id);
+  
+      setSaveStatus(updateError ? `Error: ${updateError.message}` : 'Saved!');
+    } else {
+      // Insert new row
+      const { error: insertError } = await supabase
+        .from('user_answers')
+        .insert([
+          {
+            username,
+            answers: [newDimensionData],
+          },
+        ]);
+  
+      setSaveStatus(insertError ? `Error: ${insertError.message}` : 'Saved!');
+    }
+  
+    setSaving(false);
+  };
+  
 
   return (
     <div className={styles.chatContainer} ref={containerRef}>
@@ -142,10 +236,48 @@ export default function Conversation({ file }: Props) {
         <div className={styles.summaryContainer}>
           <h2 className={styles.summaryTitle}>Summary</h2>
           <div className={styles.qaList}>
-            {conversation.map((qa) => (
+            {conversation.map((qa, index) => (
               <div key={qa.path} className={styles.qaItem}>
                 <h4 className={styles.qaQuestion}>{qa.question.question}</h4>
-                <div className={styles.qaAnswer}>{qa.selectedAnswer}</div>
+                {/* sd */}
+                {editingIndex === index ? (
+                <div className={styles.answersContainer}>
+                  <button
+                    className={styles.gradient_button}
+                    onClick={() => {
+                      const updated = [...conversation];
+                      updated[index].selectedAnswer = 'Yes';
+                      setConversation(updated);
+                      setEditingIndex(null);
+                    }}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className={styles.gradient_button}
+                    onClick={() => {
+                      const updated = [...conversation];
+                      updated[index].selectedAnswer = 'No';
+                      setConversation(updated);
+                    }}
+                  >
+                    No
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.qaAnswer}>{qa.selectedAnswer}</div>
+                  <button
+                    className={styles.editButton}
+                    onClick={() => setEditingIndex(index)}
+                  >
+                    Edit
+                  </button>
+                </>
+              )}
+
+                {/* <div className={styles.qaAnswer}>{qa.selectedAnswer}</div> */}
+                {/* sd */}
               </div>
             ))}
           </div>
@@ -156,6 +288,15 @@ export default function Conversation({ file }: Props) {
               <p className={styles.extraInfoContent}>{extraInfo}</p>
             </>
           )}
+                      <button
+              className={styles.saveButton}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save answers'}
+            </button>
+
+            {saveStatus && <div className={styles.saveStatus}>{saveStatus}</div>}
         </div>
       )}
     </div>

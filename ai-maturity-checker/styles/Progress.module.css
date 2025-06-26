@@ -1,0 +1,61 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #1e3a8a; /* blue-800 */
+    text-align: center;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  }
+
+  .table th {
+    color: #374151; /* gray-700 */
+  }
+  
+  .dimension {
+    font-weight: 500;
+    color: #1e40af; /* blue-900 */
+  }
+  
+  .progressBarWrapper {
+    width: 100%;
+    background-color: #f3f4f6; /* gray-100 */
+    border-radius: 8px;
+    overflow: hidden;
+    height: 18px;
+    position: relative;
+  }
+  
+  .progressBarFill {
+    height: 100%;
+    background-color: #3b82f6; /* blue-500 */
+    transition: width 0.3s ease;
+  }
+  
+  .complete {
+    background-color: #10b981; /* green-500 */
+  }
+  
+  .percentText {
+    font-size: 0.85rem;
+    margin-left: 8px;
+    color: #4b5563; /* gray-600 */
+  }
+  

@@ -189,4 +189,29 @@
     margin: 5px;
   }
   
+  .saveButton {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .saveStatus {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #0070f3;
+  }
+  .editButton {
+    margin-top: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #0070f3;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
   
