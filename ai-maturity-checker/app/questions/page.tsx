@@ -63,7 +63,7 @@ export default function MainPage() {
           <div key={dimension} className={styles.buttonGroup}>
             <p className={styles.topicTitle}>{title}</p>
             <Link href={`/dimension/${dimension}`} className={styles.button}>
-              {`Dimension ${dimension.slice(1)} Questionnaire`}
+              {`Start answering D${dimension.slice(1)} questions`}
             </Link>
           </div>
         ))}
