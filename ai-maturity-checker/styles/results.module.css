@@ -1,0 +1,103 @@
+.container {
+    padding: 2rem;
+    background-color: #f9fafb;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1e3a8a; /* blue-800 */
+    margin-bottom: 1.5rem;
+  }
+  
+  .tableWrapper {
+    overflow-x: auto;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb; /* light gray */
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #d1d5db;
+    padding: 0.75rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .table th {
+    background-color: #eff6ff; /* light blue */
+    color: #1e40af; /* blue-900 */
+    font-weight: 600;
+  }
+  
+  .cell {
+    transition: background-color 0.2s ease;
+    border-radius: 4px;
+  }
+  
+  .full {
+    background-color: #bbf7d0; /* green-200 */
+  }
+  
+  .partial {
+    background-color: #fef08a; /* yellow-200 */
+  }
+  
+  .low {
+    background-color: #fcd34d; /* yellow-400 */
+  }
+  
+  .empty {
+    background-color: #f3f4f6; /* gray-100 */
+    color: #6b7280; /* gray-500 */
+  }
+  
+  .saveButton {
+    margin-top: 1.5rem;
+    background-color: #2563eb; /* blue-600 */
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.4);
+    transition: background 0.2s ease;
+  }
+  
+  .saveButton:hover {
+    background-color: #1d4ed8; /* blue-700 */
+  }
+
+  
+@media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+  
+    .table th,
+    .table td {
+      padding: 0.5rem;
+      font-size: 0.85rem;
+    }
+  
+    .title {
+      font-size: 1.5rem;
+    }
+  
+    .saveButton {
+      width: 100%;
+      padding: 0.6rem 1rem;
+    }
+  }
+  

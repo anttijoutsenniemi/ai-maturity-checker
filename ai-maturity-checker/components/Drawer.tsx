@@ -36,7 +36,7 @@ const Drawer = () => {
         <div className={styles.navItem}><Link href="/">Home</Link></div>
         <div className={styles.navItem}><Link href="/questions">Questions</Link></div>
         <div className={styles.navItem}><Link href="/progress">See your progress</Link></div>
-        <div className={styles.navItem}><Link href="/route3">Route 3</Link></div>
+        <div className={styles.navItem}><Link href="/results">Results</Link></div>
       </nav>
     </>
   );
