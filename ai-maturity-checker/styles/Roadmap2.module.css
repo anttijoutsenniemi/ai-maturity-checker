@@ -1,0 +1,264 @@
+.container {
+    padding: 2rem;
+    background-color: #fefefe;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  .roadmap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stepContainer {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4rem;
+    flex-direction: row;
+    width: 100%;
+  }
+  
+  .reverse {
+    flex-direction: row-reverse;
+  }
+  
+  .ball {
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  
+  .stepNumber {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  
+  .completed {
+    background-color: #00cc88;
+    box-shadow: 0 0 20px rgba(0, 204, 136, 0.7);
+  }
+  
+  .line {
+    position: absolute;
+    top: 40px;
+    height: 80px;
+    width: 4px;
+    background: #007bff;
+    left: 18px;
+    z-index: 0;
+  }
+  
+  .reverse .line {
+    left: auto;
+    right: 18px;
+  }
+  
+  .bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  
+  .bubble {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    min-width: 220px;
+    flex: 1;
+  }
+  
+  .bubble h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .redirectButton {
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+  }
+  
+  .redirectButton:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .stepContainer {
+      flex-direction: column !important;
+      align-items: center;
+    }
+  
+    .bubbles {
+      flex-direction: column;
+      width: 100%;
+    }
+  
+    .bubble {
+      width: 100%;
+    }
+  
+    .line {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  
+    .reverse .line {
+      right: auto;
+      left: 50%;
+    }
+  }
+  
+
+.roadmapContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+  }
+  
+  .stepBlock {
+    display: flex;
+    align-items: flex-start;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .stepMarker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+  }
+  
+  .circle {
+    background: #d3d3d3;
+    color: black;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease;
+  }
+  
+  .verticalLine {
+    flex-grow: 1;
+    width: 4px;
+    background: #d3d3d3;
+    margin-top: 4px;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+  
+  .completed {
+    background: #0070f3 !important;
+    color: white;
+  }
+  
+  .stepContent {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .stepHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .stepTitle {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  
+  .toggleBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+  
+  .bubblesGrid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  
+  .bubble {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ccc;
+  }
+  
+  .bubble h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #0070f3;
+  }
+  
+  .bubble ul {
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+  
+  .bubble p {
+    margin: 0;
+    font-style: italic;
+    color: #666;
+  }
+  
+  @media (max-width: 600px) {
+    .stepBlock {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .stepMarker {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+  
+    .verticalLine {
+      height: 4px;
+      width: 100%;
+      margin-top: 0;
+      margin-left: 4px;
+    }
+  }
+  
