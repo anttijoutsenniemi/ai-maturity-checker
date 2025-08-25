@@ -1,4 +1,4 @@
-import Roadmap2 from '@/components/Roadmap2'
+import Roadmap3 from '@/components/Roadmap3'
 import { supabase } from '@/app/lib/supabaseClient'
 
 export default async function RoadmapPage() {
@@ -13,5 +13,5 @@ export default async function RoadmapPage() {
 
   const userAnswers = answersRow ? answersRow.answers : []
 
-  return <Roadmap2 levels={levels || []} userAnswers={userAnswers} />
+  return <Roadmap3 levels={levels || []} userAnswers={userAnswers} />
 }

@@ -242,6 +242,24 @@
     font-style: italic;
     color: #666;
   }
+
+  .groupBlock {
+    margin-bottom: 2rem;
+  }
+  
+  .groupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 0;
+  }
+  
+  .groupDivider {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 1rem 0 2rem 0;
+  }  
   
   @media (max-width: 600px) {
     .stepBlock {
