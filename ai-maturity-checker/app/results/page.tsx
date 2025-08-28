@@ -94,7 +94,7 @@ export default function DimensionsPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Results from your answers</h1>
-
+      <h3 className={styles.subtitle}>Save your companys priority by checking the box/boxes and clicking Save priorities</h3>
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>

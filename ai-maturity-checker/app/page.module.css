@@ -85,6 +85,31 @@
   height: 24px;
 }
 
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 2rem 0 2rem;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2rem 0;
+}
+
+/* wrapper so icon + "Completed" text sit nicely */
+.completedWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.completedText {
+  font-size: 0.9rem;
+  color: #28a745; /* green-ish text */
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .stepCard {
     flex-direction: column;
