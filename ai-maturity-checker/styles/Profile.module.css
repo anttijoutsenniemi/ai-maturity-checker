@@ -1,0 +1,174 @@
+.container {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  /* Toggle buttons */
+  .toggleRow {
+    display: flex;
+    width: 60%;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .toggleButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    background: #f3f3f3;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    min-width: 120px;
+  }
+  
+  .toggleActiveGreen {
+    background: #4caf50;
+    color: white;
+  }
+  
+  .toggleActiveLightBlue {
+    background: #4fc3f7;
+    color: white;
+  }
+  
+  .toggleActiveDarkBlue {
+    background: #1565c0;
+    color: white;
+  }
+  
+  /* Table */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    font-size: 0.95rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+  }
+  
+  .table th {
+    background: #f7f7f7;
+  }
+  
+  /* Level blocks */
+  .levelRow {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .levelBlock {
+    padding: 0.4rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid #ccc;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: white;
+    color: black;
+    white-space: nowrap;
+  }
+  
+  /* Color states */
+  .levelUndefined {
+    background: white;
+    color: black;
+  }
+  
+  .levelCurrent {
+    background: #4caf50;
+    color: white;
+  }
+  
+  .levelGap {
+    background: #4fc3f7;
+    color: white;
+  }
+  
+  .levelPriority {
+    background: #1565c0;
+    color: white;
+  }
+  
+  /* ========== Responsive tweaks ========== */
+  @media (max-width: 900px) {
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+      width: 40px;
+    }
+  
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+      min-width: 150px;
+    }
+  }
+  
+  @media (max-width: 700px) {
+    .table,
+    .table thead,
+    .table tbody,
+    .table th,
+    .table td,
+    .table tr {
+      display: block;
+    }
+  
+    .table thead {
+      display: none; /* hide headers on small screens */
+    }
+  
+    .table tr {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 0.5rem;
+    }
+  
+    .table td {
+      border: none;
+      padding: 0.5rem 0;
+    }
+  
+    .table td:nth-child(1)::before {
+      content: "# ";
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+  
+    .table td:nth-child(2)::before {
+      content: "Dimension: ";
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+  
+    .table td:nth-child(3)::before {
+      content: "Profile: ";
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+  
+    .levelRow {
+      gap: 0.4rem;
+    }
+  
+    .levelBlock {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+    }
+  }
+  

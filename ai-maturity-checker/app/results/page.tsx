@@ -36,6 +36,10 @@ export default function DimensionsPage() {
   const [userAnswers, setUserAnswers] = useState<AnswerEntry[]>([])
   const [priorityToggles, setPriorityToggles] = useState<{ [dimension: string]: boolean }>({})
 
+  const [loading, setLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
   useEffect(() => {
     const fetchData = async () => {
       const [{ data: topics }, { data: levels }, { data: answers }] = await Promise.all([
@@ -87,9 +91,36 @@ export default function DimensionsPage() {
     }))
   }
 
-  const savePriority = () => {
-    console.log('Saving toggled priorities:', priorityToggles)
-  }
+  const savePriority = async () => {
+    let username = "jaakko";
+    const priorityDimensions = Object.keys(priorityToggles).filter(dim => priorityToggles[dim])
+  
+    setLoading(true)
+    setSuccessMessage('')
+    setErrorMessage('')
+  
+    try {
+      const res = await fetch('/api/save-priority', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          priority_dimensions: priorityDimensions
+        })
+      })
+  
+      const data = await res.json()
+      if (!res.ok) {
+        setErrorMessage(data.error || 'Error saving priority')
+      } else {
+        setSuccessMessage('Priorities saved!')
+      }
+    } catch (err) {
+      setErrorMessage('Network error saving priority')
+    } finally {
+      setLoading(false)
+    }
+  }  
 
   return (
     <div className={styles.container}>
@@ -147,9 +178,20 @@ export default function DimensionsPage() {
         </table>
       </div>
 
-      <button className={styles.saveButton} onClick={savePriority}>
-        Save Priorities
+      <button 
+        className={styles.saveButton} 
+        onClick={savePriority} 
+        disabled={loading}
+      >
+        {loading ? 'Loading...' : 'Save Priorities'}
       </button>
+
+      {successMessage && (
+        <p style={{ color: 'green', marginTop: '8px' }}>{successMessage}</p>
+      )}
+      {errorMessage && (
+        <p style={{ color: 'red', marginTop: '8px' }}>{errorMessage}</p>
+      )}
     </div>
   )
 }
