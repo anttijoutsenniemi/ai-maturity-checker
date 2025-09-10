@@ -1,38 +1,90 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import clsx from "clsx"
-import styles from "@/styles/Profile.module.css";
+import { supabase } from "@/app/lib/supabaseClient"
+import styles from "@/styles/Profile.module.css"
+import levelStyles from "@/styles/ProfileLevels.module.css"
 
-// mock data: replace with API call from Supabase
-const dimensions = [
-  {
-    number: 1,
-    name: "AI models usage, development, deployment and maintenance",
-    levels: ["D1-L0", "D1-L1", "D1-L2", "D1-L3", "D1-L4"]
-  },
-  {
-    number: 2,
-    name: "Data management processes",
-    levels: ["D2-L0", "D2-L1", "D2-L2", "D2-L3"]
-  },
-  {
-    number: 3,
-    name: "Co-creation of AI system",
-    levels: ["D3-L0", "D3-L1", "D3-L2"]
-  }
-  // … add all 10 here
-]
+type Topic = {
+  id: number
+  title: string
+  dimension: string
+}
+
+type CapabilityLevel = {
+  cl_short: string
+  capability_level: string
+  question_ids: string[]
+  dimension_id: string
+}
 
 export default function AiProfilePage() {
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [capabilityLevels, setCapabilityLevels] = useState<CapabilityLevel[]>([])
+  const [currentLevels, setCurrentLevels] = useState<string[]>([])
+  const [gapLevels, setGapLevels] = useState<string[]>([])
+  const [priorityLevels, setPriorityLevels] = useState<string[]>([])
   const [showCurrent, setShowCurrent] = useState(true)
   const [showGap, setShowGap] = useState(true)
   const [showPriority, setShowPriority] = useState(true)
 
-  // in real app, load from Supabase
-  const [userPriorities] = useState<string[]>(["D1-L2", "D5-L2"])
-  const [currentLevels] = useState<string[]>(["D1-L1", "D2-L1", "D4-L2"])
-  const [gapLevels] = useState<string[]>(["D1-L2", "D2-L2", "D5-L2"])
+  useEffect(() => {
+    const loadData = async () => {
+      const username = "jaakko"
+
+      // fetch topics
+      const { data: topicsData } = await supabase.from("topics").select("id,title,dimension")
+      setTopics(topicsData || [])
+
+      // fetch capability_levels
+      const { data: clData } = await supabase.from("capability_levels").select("dimension_id,cl_short,capability_level,question_ids")
+      setCapabilityLevels(clData || [])
+
+      // fetch user answers
+      const { data: uaData } = await supabase.from("user_answers").select("answers").eq("username", username).single()
+
+        // set current levels
+        let completed: string[] = []
+        if (uaData?.answers) {
+        const parsedAnswers = typeof uaData.answers === "string"
+            ? JSON.parse(uaData.answers)
+            : uaData.answers
+
+        for (const dim of parsedAnswers) {
+            const answersObj = dim.answers
+            for (const lvl of clData || []) {
+            if (lvl.dimension_id === dim.dimension_id) {
+                const allTrue = lvl.question_ids.every((qid: string) => answersObj[qid] === true)
+                if (allTrue) {
+                completed.push(lvl.cl_short)
+                }
+            }
+            }
+        }
+        }
+        setCurrentLevels(completed)
+
+
+      // fetch user priorities
+      const { data: priorities } = await supabase.from("user_priorities").select("priority_levels").eq("username", username).single()
+      if (priorities?.priority_levels && priorities.priority_levels.length > 0) {
+        setPriorityLevels(priorities.priority_levels)
+      }
+
+      // fetch gap levels from dependencies
+      const { data: deps } = await supabase.from("level_dependencies").select("level,dimension")
+      if (deps) {
+        // naive gap logic: deps.level is a gap if not completed but is needed
+        const gaps = deps
+          .filter((d: any) => !completed.includes(d.level))
+          .map((d: any) => d.level)
+        setGapLevels(gaps)
+      }
+    }
+
+    loadData()
+  }, [])
 
   return (
     <div className={styles.container}>
@@ -68,34 +120,73 @@ export default function AiProfilePage() {
           </tr>
         </thead>
         <tbody>
-          {dimensions.map((dim) => (
-            <tr key={dim.number}>
-              <td>{dim.number}</td>
-              <td>{dim.name}</td>
-              <td>
-                <div className={styles.levelRow}>
-                  {dim.levels.map((lvl) => {
-                    let colorClass = styles.levelUndefined
+          {topics.map((dim, idx) => {
+            const dimLevels = capabilityLevels.filter((c) => c.dimension_id === dim.dimension)
+            return (
+              <tr key={dim.id}>
+                <td>{idx + 1}</td>
+                <td>{dim.title}</td>
+                <td>
+                  <div className={styles.levelRow}>
+                    {dimLevels.map((lvl) => {
+                      let colorClass = styles.levelUndefined
 
-                    if (showCurrent && currentLevels.includes(lvl))
-                      colorClass = styles.levelCurrent
-                    if (showGap && gapLevels.includes(lvl))
-                      colorClass = styles.levelGap
-                    if (showPriority && userPriorities.includes(lvl))
-                      colorClass = styles.levelPriority
+                      if (showCurrent && currentLevels.includes(lvl.cl_short))
+                        colorClass = styles.levelCurrent
+                      if (showGap && gapLevels.includes(lvl.cl_short))
+                        colorClass = styles.levelGap
+                      if (showPriority && priorityLevels.includes(lvl.cl_short))
+                        colorClass = styles.levelPriority
 
-                    return (
-                      <div key={lvl} className={clsx(styles.levelBlock, colorClass)}>
-                        {lvl}
-                      </div>
-                    )
-                  })}
-                </div>
-              </td>
-            </tr>
-          ))}
+                      return (
+                        <div key={lvl.cl_short} className={clsx(styles.levelBlock, colorClass)}>
+                          {lvl.cl_short}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
+
+      {/* New section under table */}
+      <div className={levelStyles.levelBox}>
+        <div className={levelStyles.section}>
+          <h3>1. Completed Levels</h3>
+          {capabilityLevels
+            .filter((cl) => currentLevels.includes(cl.cl_short))
+            .map((cl) => (
+              <div key={cl.cl_short} className={levelStyles.levelRow}>
+                {cl.cl_short}, {cl.capability_level}
+              </div>
+            ))}
+        </div>
+
+        <div className={levelStyles.section}>
+          <h3>2. Gap Levels</h3>
+          {capabilityLevels
+            .filter((cl) => gapLevels.includes(cl.cl_short))
+            .map((cl) => (
+              <div key={cl.cl_short} className={levelStyles.levelRow}>
+                {cl.cl_short}, {cl.capability_level}
+              </div>
+            ))}
+        </div>
+
+        <div className={levelStyles.section}>
+          <h3>3. Priority Levels</h3>
+          {capabilityLevels
+            .filter((cl) => priorityLevels.includes(cl.cl_short))
+            .map((cl) => (
+              <div key={cl.cl_short} className={levelStyles.levelRow}>
+                {cl.cl_short}, {cl.capability_level}
+              </div>
+            ))}
+        </div>
+      </div>
     </div>
   )
 }
