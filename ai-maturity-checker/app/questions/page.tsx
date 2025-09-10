@@ -27,7 +27,11 @@ export default function MainPage() {
 
       const uniqueDimensions = Array.from(
         new Set(questionsData.map((q) => q.dimension.split('-')[0]))
-      ).sort();
+      ).sort((a, b) => {
+        const numA = parseInt(a.slice(1), 10);
+        const numB = parseInt(b.slice(1), 10);
+        return numA - numB;
+      });
 
       // Step 2: Fetch corresponding topic titles from Topics table
       const { data: topicsData, error: topicsError } = await supabase

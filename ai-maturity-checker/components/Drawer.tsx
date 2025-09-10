@@ -15,31 +15,59 @@ const Drawer = () => {
     return () => window.removeEventListener('resize', updateMedia);
   }, []);
 
+  const handleNavClick = () => {
+    setOpen(false); // close on mobile after nav click
+  };
+
   return (
     <>
       <button className={styles.hamburger} onClick={() => setOpen(!open)}>
         ☰
       </button>
+
+      {/* Overlay (only visible when open on mobile) */}
+      {open && (
+        <div
+          className={styles.overlay}
+          onClick={() => setOpen(false)}
+        />
+      )}
+
       <nav
         className={`${styles.drawer} ${
-            isMobile ? styles.drawerMobile : ''
+          isMobile ? styles.drawerMobile : ''
         } ${
-            open
+          open
             ? isMobile
-                ? styles.drawerMobileVisible
-                : styles.drawerVisible
+              ? styles.drawerMobileVisible
+              : styles.drawerVisible
             : isMobile
             ? styles.drawerMobileHidden
             : styles.drawerHidden
         }`}
-        >
-        <div className={styles.navItem}><Link href="/">Home</Link></div>
-        <div className={styles.navItem}><Link href="/questions">Questions</Link></div>
-        <div className={styles.navItem}><Link href="/progress">See your progress</Link></div>
-        <div className={styles.navItem}><Link href="/results">Results & save priorities</Link></div>
-        <div className={styles.navItem}><Link href="/profile">AI maturity profile</Link></div>
-        <div className={styles.navItem}><Link href="/roadmap">Roadmap</Link></div>
-        
+      >
+        <Link href="/" onClick={handleNavClick}>
+          <div className={styles.navItem}>Home</div>
+        </Link>
+        <hr />
+        <h3>AI report steps</h3>
+        <Link href="/questions" onClick={handleNavClick}>
+          <div className={styles.navItem}>1. Questions</div>
+        </Link>
+        <Link href="/progress" onClick={handleNavClick}>
+          <div className={styles.navItem}>2. See your progress</div>
+        </Link>
+        <Link href="/results" onClick={handleNavClick}>
+          <div className={styles.navItem}>3. Results &amp; save priorities</div>
+        </Link>
+        <Link href="/profile" onClick={handleNavClick}>
+          <div className={styles.navItem}>4. AI maturity report</div>
+        </Link>
+        <hr />
+        <h3>Reassessment steps</h3>
+        <Link href="/roadmap" onClick={handleNavClick}>
+          <div className={styles.navItem}>5. Roadmap</div>
+        </Link>
       </nav>
     </>
   );
