@@ -37,7 +37,7 @@ export default function ProgressPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Your Progress</h1>
+      <h1 className={styles.title}>Your Progress in answering questions</h1>
       <table className={styles.table}>
         <thead>
           <tr>
