@@ -60,11 +60,11 @@ export default function HomePage() {
       <hr className={styles.divider} />
 
       {/* === Reassessment steps === */}
-      <h2 className={styles.sectionTitle}>Reassessment steps (optional)</h2>
+      {/* <h2 className={styles.sectionTitle}>Reassessment steps (optional)</h2>
       <p className={styles.subtitle2}>In reassessment steps you can level up your companys AI maturity and track your progress going forward.</p>
       <div className={styles.steps}>
         {reassessmentSteps.map(renderStep)}
-      </div>
+      </div> */}
     </main>
   );
 }

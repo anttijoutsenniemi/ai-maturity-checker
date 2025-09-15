@@ -54,20 +54,20 @@ const Drawer = () => {
         <Link href="/questions" onClick={handleNavClick}>
           <div className={styles.navItem}>1. Questions</div>
         </Link>
-        <Link href="/progress" onClick={handleNavClick}>
-          <div className={styles.navItem}>2. See your progress</div>
-        </Link>
         <Link href="/results" onClick={handleNavClick}>
-          <div className={styles.navItem}>3. Results &amp; save priorities</div>
+          <div className={styles.navItem}>2. Results &amp; save priorities</div>
         </Link>
         <Link href="/profile" onClick={handleNavClick}>
-          <div className={styles.navItem}>4. AI maturity report</div>
+          <div className={styles.navItem}>3. Analysis & Planning</div>
         </Link>
-        <hr />
+        <Link href="/recommendations" onClick={handleNavClick}>
+          <div className={styles.navItem}>4. Get recommendations</div>
+        </Link>
+        {/* <hr />
         <h3>Reassessment steps</h3>
         <Link href="/roadmap" onClick={handleNavClick}>
           <div className={styles.navItem}>5. Roadmap</div>
-        </Link>
+        </Link> */}
       </nav>
     </>
   );

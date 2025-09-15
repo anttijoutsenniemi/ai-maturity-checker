@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/app/lib/supabaseClient';
 import styles from '@/styles/QuestionsPage.module.css';
-import ProgressSection from '@/components/ProgressSection'; // ✅ moved ProgressPage into a reusable component
 
 type DimensionInfo = {
   dimension: string;
@@ -13,10 +12,10 @@ type DimensionInfo = {
 
 export default function MainPage() {
   const [dimensionInfo, setDimensionInfo] = useState<DimensionInfo[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      // Step 1: Get distinct dimensions from Questions
       const { data: questionsData, error: questionsError } = await supabase
         .from('Questions')
         .select('dimension');
@@ -34,6 +33,7 @@ export default function MainPage() {
         return numA - numB;
       });
 
+      // Step 2: Fetch corresponding topic titles from Topics table
       const { data: topicsData, error: topicsError } = await supabase
         .from('topics')
         .select('dimension, title')
@@ -44,6 +44,7 @@ export default function MainPage() {
         return;
       }
 
+      // Step 3: Merge the two based on matching dimension
       const merged: DimensionInfo[] = uniqueDimensions.map((dim) => {
         const topic = topicsData.find((t) => t.dimension === dim);
         return {
@@ -60,21 +61,6 @@ export default function MainPage() {
 
   return (
     <div className={styles.container}>
-      {/* Collapsible Section */}
-      <div className={styles.collapsible}>
-        <button
-          className={styles.collapsibleButton}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? 'Hide Progress ▲' : 'Show Progress ▼'}
-        </button>
-        {isOpen && (
-          <div className={styles.collapsibleContent}>
-            <ProgressSection /> {/*  real progress component */}
-          </div>
-        )}
-      </div>
-
       <h1 className={styles.title}>Available Questionnaires</h1>
       <div className={styles.buttonList}>
         {dimensionInfo.map(({ dimension, title }) => (

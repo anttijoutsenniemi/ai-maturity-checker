@@ -1,0 +1,61 @@
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .container h1, .container h2 {
+    margin-bottom: 1rem;
+  }
+  
+  .container section {
+    margin-bottom: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+  }
+  
+  .table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+  }
+  
+  .table ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+  
+  .table li {
+    margin-bottom: 0.25rem;
+  }
+  
+  .gapBox {
+    margin-bottom: 10px;
+    background: #4fc3f7;
+    padding: 5px;
+    padding-left: 10px;
+    border-radius: 10px;
+  }
+
+  .desiredBox {
+    margin-bottom: 10px;
+    padding-left: 10px;
+    background: #1565c0;
+    color: white;
+    padding: 5px;
+    border-radius: 10px;
+  }

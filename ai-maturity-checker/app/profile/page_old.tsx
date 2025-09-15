@@ -32,81 +32,59 @@ export default function AiProfilePage() {
   useEffect(() => {
     const loadData = async () => {
       const username = "jaakko"
-  
+
       // fetch topics
       const { data: topicsData } = await supabase.from("topics").select("id,title,dimension")
       setTopics(topicsData || [])
-  
+
       // fetch capability_levels
-      const { data: clData } = await supabase
-        .from("capability_levels")
-        .select("dimension_id,cl_short,capability_level,question_ids")
+      const { data: clData } = await supabase.from("capability_levels").select("dimension_id,cl_short,capability_level,question_ids")
       setCapabilityLevels(clData || [])
-  
-      // fetch user answers -> determine completed/current levels
-      const { data: uaData } = await supabase
-        .from("user_answers")
-        .select("answers")
-        .eq("username", username)
-        .single()
-  
-      let completed: string[] = []
-      if (uaData?.answers) {
-        const parsedAnswers =
-          typeof uaData.answers === "string" ? JSON.parse(uaData.answers) : uaData.answers
-  
+
+      // fetch user answers
+      const { data: uaData } = await supabase.from("user_answers").select("answers").eq("username", username).single()
+
+        // set current levels
+        let completed: string[] = []
+        if (uaData?.answers) {
+        const parsedAnswers = typeof uaData.answers === "string"
+            ? JSON.parse(uaData.answers)
+            : uaData.answers
+
         for (const dim of parsedAnswers) {
-          const answersObj = dim.answers
-          for (const lvl of clData || []) {
+            const answersObj = dim.answers
+            for (const lvl of clData || []) {
             if (lvl.dimension_id === dim.dimension_id) {
-              const allTrue = lvl.question_ids.every((qid: string) => answersObj[qid] === true)
-              if (allTrue) {
+                const allTrue = lvl.question_ids.every((qid: string) => answersObj[qid] === true)
+                if (allTrue) {
                 completed.push(lvl.cl_short)
-              }
+                }
             }
-          }
+            }
         }
-      }
-      setCurrentLevels(completed)
-  
-      // fetch user priorities -> desired levels
-      const { data: priorities } = await supabase
-        .from("user_priorities")
-        .select("priority_dimensions")
-        .eq("username", username)
-        .single()
-  
-      let desired: string[] = []
-      if (priorities?.priority_dimensions && priorities.priority_dimensions.length > 0) {
-        desired = (clData || [])
-          .filter((lvl) => priorities.priority_dimensions.includes(lvl.dimension_id))
-          .map((lvl) => lvl.cl_short)
-      }
-      setPriorityLevels(desired)
-  
-        // fetch dependencies -> gap levels
-        const { data: deps } = await supabase
-        .from("level_dependencies")
-        .select("level, dependencies")
-
-        let gaps: string[] = []
-        if (deps) {
-        // find dependencies for desired levels
-        const needed = deps
-            .filter((d: any) => desired.includes(d.level))
-            .flatMap((d: any) => d.dependencies || []) // flatten array column
-
-        // dedupe + exclude completed & desired
-        gaps = [...new Set(needed)].filter(
-            (lvl: string) => !completed.includes(lvl) && !desired.includes(lvl)
-        )
         }
+        setCurrentLevels(completed)
+
+
+      // fetch user priorities
+      const { data: priorities } = await supabase.from("user_priorities").select("priority_levels").eq("username", username).single()
+      if (priorities?.priority_levels && priorities.priority_levels.length > 0) {
+        setPriorityLevels(priorities.priority_levels)
+      }
+
+      // fetch gap levels from dependencies
+      const { data: deps } = await supabase.from("level_dependencies").select("level,dimension")
+      if (deps) {
+        // naive gap logic: deps.level is a gap if not completed but is needed
+        const gaps = deps
+          .filter((d: any) => !completed.includes(d.level))
+          .map((d: any) => d.level)
         setGapLevels(gaps)
+      }
     }
-  
+
     loadData()
   }, [])
-  
 
   return (
     <div className={styles.container}>
@@ -116,19 +94,19 @@ export default function AiProfilePage() {
           className={clsx(styles.toggleButton, showCurrent && styles.toggleActiveGreen)}
           onClick={() => setShowCurrent(!showCurrent)}
         >
-          1. Show current levels
+          Show current levels
         </button>
         <button
           className={clsx(styles.toggleButton, showGap && styles.toggleActiveLightBlue)}
           onClick={() => setShowGap(!showGap)}
         >
-          2. Show gap levels
+          Show gap levels
         </button>
         <button
           className={clsx(styles.toggleButton, showPriority && styles.toggleActiveDarkBlue)}
           onClick={() => setShowPriority(!showPriority)}
         >
-          3. Show priority levels
+          Show priority levels
         </button>
       </div>
 
@@ -150,24 +128,22 @@ export default function AiProfilePage() {
                 <td>{dim.title}</td>
                 <td>
                   <div className={styles.levelRow}>
-                  {dimLevels.map((lvl) => {
-                    let colorClass = styles.levelUndefined
+                    {dimLevels.map((lvl) => {
+                      let colorClass = styles.levelUndefined
 
-                    if (showCurrent && currentLevels.includes(lvl.cl_short)) {
+                      if (showCurrent && currentLevels.includes(lvl.cl_short))
                         colorClass = styles.levelCurrent
-                    } else if (showPriority && priorityLevels.includes(lvl.cl_short)) {
-                        colorClass = styles.levelPriority
-                    } else if (showGap && gapLevels.includes(lvl.cl_short)) {
+                      if (showGap && gapLevels.includes(lvl.cl_short))
                         colorClass = styles.levelGap
-                    }
+                      if (showPriority && priorityLevels.includes(lvl.cl_short))
+                        colorClass = styles.levelPriority
 
-                    return (
+                      return (
                         <div key={lvl.cl_short} className={clsx(styles.levelBlock, colorClass)}>
-                        {lvl.cl_short}
+                          {lvl.cl_short}
                         </div>
-                    )
+                      )
                     })}
-
                   </div>
                 </td>
               </tr>
