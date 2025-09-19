@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
 import styles from '@/styles/results.module.css'
+import { useStepsProgress } from '@/hooks/useSteps2'
 import classNames from 'classnames'
 
 type Topic = {
@@ -39,6 +40,7 @@ export default function DimensionsPage() {
   const [loading, setLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const { completeStep } = useStepsProgress("jaakko");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,6 +120,7 @@ export default function DimensionsPage() {
     } catch (err) {
       setErrorMessage('Network error saving priority')
     } finally {
+      completeStep(2);
       setLoading(false)
     }
   }  

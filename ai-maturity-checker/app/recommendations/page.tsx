@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/app/lib/supabaseClient"
 import styles from "@/styles/Recommendations.module.css"
+import { useStepsProgress } from "@/hooks/useSteps2"
 
 type CapabilityLevel = {
   cl_short: string
@@ -22,8 +23,13 @@ type UserAnswer = {
 export default function RecommendationsPage() {
   const [gapLevels, setGapLevels] = useState<CapabilityLevel[]>([])
   const [desiredLevels, setDesiredLevels] = useState<CapabilityLevel[]>([])
+  const { completedSteps, completeStep } = useStepsProgress("jaakko");
 
   useEffect(() => {
+    //complete step for front page
+    if (!completedSteps.includes(4)) {
+      completeStep(4);
+    }
     const loadData = async () => {
       const username = "jaakko"
 

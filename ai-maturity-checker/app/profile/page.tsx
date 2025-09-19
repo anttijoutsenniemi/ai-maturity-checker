@@ -5,6 +5,7 @@ import clsx from "clsx"
 import { supabase } from "@/app/lib/supabaseClient"
 import styles from "@/styles/Profile.module.css"
 import levelStyles from "@/styles/ProfileLevels.module.css"
+import { useStepsProgress } from "@/hooks/useSteps2"
 
 type Topic = {
   id: number
@@ -28,8 +29,13 @@ export default function AiProfilePage() {
   const [showCurrent, setShowCurrent] = useState(true)
   const [showGap, setShowGap] = useState(true)
   const [showPriority, setShowPriority] = useState(true)
+  const { completedSteps, completeStep } = useStepsProgress("jaakko");
 
   useEffect(() => {
+    //complete step for front page
+    if (!completedSteps.includes(3)) {
+      completeStep(3);
+    }
     const loadData = async () => {
       const username = "jaakko"
   

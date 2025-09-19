@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/app/lib/supabaseClient';
 import { useParams } from 'next/navigation';
+import { useDimensionsProgress } from '@/hooks/useDimensions';
 import styles from '@/styles/Conversation.module.css';
 
 interface Answer {
@@ -42,6 +43,7 @@ export default function Conversation({ file }: Props) {
   const [saveStatus, setSaveStatus] = useState('');
   const params = useParams();
   const dimension = params?.dimension?.toString().toUpperCase() || 'D1';
+  const { completeDimension } = useDimensionsProgress("jaakko");
 
   useEffect(() => {
     if (!file?.data?.questions) return;
@@ -172,7 +174,7 @@ export default function Conversation({ file }: Props) {
   
       setSaveStatus(insertError ? `Error: ${insertError.message}` : 'Saved!');
     }
-  
+    completeDimension(dimension);
     setSaving(false);
   };
   

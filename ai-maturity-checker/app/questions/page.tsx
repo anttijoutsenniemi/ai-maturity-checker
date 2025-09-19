@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/app/lib/supabaseClient';
 import styles from '@/styles/QuestionsPage.module.css';
-import ProgressSection from '@/components/ProgressSection'; // ✅ moved ProgressPage into a reusable component
+import ProgressSection from '@/components/ProgressSection'; //moved ProgressPage into a reusable component
 
 type DimensionInfo = {
   dimension: string;
