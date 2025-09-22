@@ -49,6 +49,9 @@ const Drawer = () => {
         <Link href="/" onClick={handleNavClick}>
           <div className={styles.navItem}>Home</div>
         </Link>
+        <Link href="/signin" onClick={handleNavClick}>
+          <div className={styles.navItem}>Sign in / Sign up</div>
+        </Link>
         <hr />
         <h3>AI report steps</h3>
         <Link href="/questions" onClick={handleNavClick}>

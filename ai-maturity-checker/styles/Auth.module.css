@@ -1,0 +1,93 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f9fafb;
+    padding: 1rem; /* ensures spacing on very small screens */
+  }
+  
+  .card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #e5e7eb;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* center children horizontally */
+    gap: 1rem;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .input {
+    width: 100%;           /* take full width of card */
+    max-width: 320px;      /* keeps inputs nicely centered, not too wide */
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    display: block;        /* ensures no inline shifting */
+    margin: 0 auto;        /* horizontal centering */
+  }
+  
+  .button {
+    width: 100%;
+    max-width: 320px;      /* matches input width */
+    padding: 0.75rem;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+    transition: background 0.2s ease;
+  }
+  
+  .button:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+  }
+  
+  .button:hover:not(:disabled) {
+    background: #1e40af;
+  }
+  
+  .switchText {
+    margin-top: 0.5rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+  
+  .link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  
+  .error {
+    color: #dc2626;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  .success {
+    color: #16a34a;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
