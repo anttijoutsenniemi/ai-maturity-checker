@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateCredentials } from "@/utils/validation";
+import { supabase } from "@/app/lib/supabaseClient";
 
 export async function POST(req: Request) {
   try {
@@ -10,8 +11,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error }, { status: 400 });
     }
 
-    // TODO: Supabase sign-in logic goes here
-    return NextResponse.json({ message: "Sign in successful", email });
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      return NextResponse.json({ error: signInError.message }, { status: 400 });
+    }
+    
+    return NextResponse.json({ message: "Sign in successful", user: data.user });
   } catch (err) {
     console.error("Sign in error:", err);
     return NextResponse.json({ error: "Failed to process sign in" }, { status: 500 });

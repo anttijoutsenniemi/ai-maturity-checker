@@ -5,6 +5,7 @@ import clsx from "clsx"
 import { supabase } from "@/app/lib/supabaseClient"
 import styles from "@/styles/Profile.module.css"
 import levelStyles from "@/styles/ProfileLevels.module.css"
+import { useStepsProgress } from "@/hooks/useSteps2"
 
 type Topic = {
   id: number
@@ -19,7 +20,7 @@ type CapabilityLevel = {
   dimension_id: string
 }
 
-export default function AiProfilePage() {
+export default function AiProfileClient({ email }: { email: string }) {
   const [topics, setTopics] = useState<Topic[]>([])
   const [capabilityLevels, setCapabilityLevels] = useState<CapabilityLevel[]>([])
   const [currentLevels, setCurrentLevels] = useState<string[]>([])
@@ -29,62 +30,96 @@ export default function AiProfilePage() {
   const [showGap, setShowGap] = useState(true)
   const [showPriority, setShowPriority] = useState(true)
 
-  useEffect(() => {
-    const loadData = async () => {
-      const username = "jaakko"
+  const { completedSteps, completeStep } = useStepsProgress(email)
 
+  useEffect(() => {
+    if (!completedSteps.includes(3)) {
+      completeStep(3)
+    }
+
+    const loadData = async () => {
       // fetch topics
-      const { data: topicsData } = await supabase.from("topics").select("id,title,dimension")
+      const { data: topicsData } = await supabase
+        .from("topics")
+        .select("id,title,dimension")
       setTopics(topicsData || [])
 
       // fetch capability_levels
-      const { data: clData } = await supabase.from("capability_levels").select("dimension_id,cl_short,capability_level,question_ids")
+      const { data: clData } = await supabase
+        .from("capability_levels")
+        .select("dimension_id,cl_short,capability_level,question_ids")
       setCapabilityLevels(clData || [])
 
-      // fetch user answers
-      const { data: uaData } = await supabase.from("user_answers").select("answers").eq("username", username).single()
+      // fetch user answers -> determine completed/current levels
+      const { data: uaData } = await supabase
+        .from("user_answers")
+        .select("answers")
+        .eq("username", email)
+        .single()
 
-        // set current levels
-        let completed: string[] = []
-        if (uaData?.answers) {
-        const parsedAnswers = typeof uaData.answers === "string"
+      let completed: string[] = []
+      if (uaData?.answers) {
+        const parsedAnswers =
+          typeof uaData.answers === "string"
             ? JSON.parse(uaData.answers)
             : uaData.answers
 
         for (const dim of parsedAnswers) {
-            const answersObj = dim.answers
-            for (const lvl of clData || []) {
+          const answersObj = dim.answers
+          for (const lvl of clData || []) {
             if (lvl.dimension_id === dim.dimension_id) {
-                const allTrue = lvl.question_ids.every((qid: string) => answersObj[qid] === true)
-                if (allTrue) {
+              const allTrue = lvl.question_ids.every(
+                (qid: string) => answersObj[qid] === true
+              )
+              if (allTrue) {
                 completed.push(lvl.cl_short)
-                }
+              }
             }
-            }
+          }
         }
-        }
-        setCurrentLevels(completed)
-
-
-      // fetch user priorities
-      const { data: priorities } = await supabase.from("user_priorities").select("priority_levels").eq("username", username).single()
-      if (priorities?.priority_levels && priorities.priority_levels.length > 0) {
-        setPriorityLevels(priorities.priority_levels)
       }
+      setCurrentLevels(completed)
 
-      // fetch gap levels from dependencies
-      const { data: deps } = await supabase.from("level_dependencies").select("level,dimension")
+      // fetch user priorities -> desired levels
+      const { data: priorities } = await supabase
+        .from("user_priorities")
+        .select("priority_dimensions")
+        .eq("username", email)
+        .single()
+
+      let desired: string[] = []
+      if (
+        priorities?.priority_dimensions &&
+        priorities.priority_dimensions.length > 0
+      ) {
+        desired = (clData || [])
+          .filter((lvl) =>
+            priorities.priority_dimensions.includes(lvl.dimension_id)
+          )
+          .map((lvl) => lvl.cl_short)
+      }
+      setPriorityLevels(desired)
+
+      // fetch dependencies -> gap levels
+      const { data: deps } = await supabase
+        .from("level_dependencies")
+        .select("level, dependencies")
+
+      let gaps: string[] = []
       if (deps) {
-        // naive gap logic: deps.level is a gap if not completed but is needed
-        const gaps = deps
-          .filter((d: any) => !completed.includes(d.level))
-          .map((d: any) => d.level)
-        setGapLevels(gaps)
+        const needed = deps
+          .filter((d: any) => desired.includes(d.level))
+          .flatMap((d: any) => d.dependencies || [])
+
+        gaps = [...new Set(needed)].filter(
+          (lvl: string) => !completed.includes(lvl) && !desired.includes(lvl)
+        )
       }
+      setGapLevels(gaps)
     }
 
     loadData()
-  }, [])
+  }, [email, completedSteps, completeStep])
 
   return (
     <div className={styles.container}>
@@ -94,19 +129,19 @@ export default function AiProfilePage() {
           className={clsx(styles.toggleButton, showCurrent && styles.toggleActiveGreen)}
           onClick={() => setShowCurrent(!showCurrent)}
         >
-          Show current levels
+          1. Show current levels
         </button>
         <button
           className={clsx(styles.toggleButton, showGap && styles.toggleActiveLightBlue)}
           onClick={() => setShowGap(!showGap)}
         >
-          Show gap levels
+          2. Show gap levels
         </button>
         <button
           className={clsx(styles.toggleButton, showPriority && styles.toggleActiveDarkBlue)}
           onClick={() => setShowPriority(!showPriority)}
         >
-          Show priority levels
+          3. Show priority levels
         </button>
       </div>
 
@@ -121,7 +156,9 @@ export default function AiProfilePage() {
         </thead>
         <tbody>
           {topics.map((dim, idx) => {
-            const dimLevels = capabilityLevels.filter((c) => c.dimension_id === dim.dimension)
+            const dimLevels = capabilityLevels.filter(
+              (c) => c.dimension_id === dim.dimension
+            )
             return (
               <tr key={dim.id}>
                 <td>{idx + 1}</td>
@@ -131,15 +168,22 @@ export default function AiProfilePage() {
                     {dimLevels.map((lvl) => {
                       let colorClass = styles.levelUndefined
 
-                      if (showCurrent && currentLevels.includes(lvl.cl_short))
+                      if (showCurrent && currentLevels.includes(lvl.cl_short)) {
                         colorClass = styles.levelCurrent
-                      if (showGap && gapLevels.includes(lvl.cl_short))
-                        colorClass = styles.levelGap
-                      if (showPriority && priorityLevels.includes(lvl.cl_short))
+                      } else if (
+                        showPriority &&
+                        priorityLevels.includes(lvl.cl_short)
+                      ) {
                         colorClass = styles.levelPriority
+                      } else if (showGap && gapLevels.includes(lvl.cl_short)) {
+                        colorClass = styles.levelGap
+                      }
 
                       return (
-                        <div key={lvl.cl_short} className={clsx(styles.levelBlock, colorClass)}>
+                        <div
+                          key={lvl.cl_short}
+                          className={clsx(styles.levelBlock, colorClass)}
+                        >
                           {lvl.cl_short}
                         </div>
                       )

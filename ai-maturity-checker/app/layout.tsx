@@ -1,8 +1,7 @@
-import '../styles/globals.css';
-import Drawer from '../components/Drawer';
+import '@/app/globals.css';
 
 export const metadata = {
-  title: 'AI status checker',
+  title: 'AI CapDev tool',
   description: 'Level up your AI adaptation in business.',
 };
 
@@ -15,7 +14,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
-        <Drawer />
       </body>
     </html>
   );

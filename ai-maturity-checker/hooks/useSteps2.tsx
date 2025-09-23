@@ -15,7 +15,7 @@ export function useStepsProgress(username: string) {
       const stored = localStorage.getItem(STORAGE_KEY(username));
       if (stored) {
         const parsed: number[] = JSON.parse(stored);
-        console.log(`🔄 Loaded completed steps for ${username}:`, parsed);
+        console.log(`Loaded completed steps for ${username}:`, parsed);
         setCompletedSteps(parsed);
       }
     } catch (e) {
@@ -25,7 +25,7 @@ export function useStepsProgress(username: string) {
 
   useEffect(() => {
     if (!mounted) return;
-    console.log(`💾 Saving completed steps for ${username}:`, completedSteps);
+    console.log(` Saving completed steps for ${username}:`, completedSteps);
     localStorage.setItem(STORAGE_KEY(username), JSON.stringify(completedSteps));
   }, [completedSteps, mounted, username]);
 
