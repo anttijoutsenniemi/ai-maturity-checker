@@ -29,9 +29,10 @@ interface Props {
       questions: Question[];
     };
   };
+  email: string;
 }
 
-export default function Conversation({ file }: Props) {
+export default function Conversation({ file, email }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [conversation, setConversation] = useState<QA[]>([]);
   const [extraInfo, setExtraInfo] = useState('');
@@ -43,7 +44,7 @@ export default function Conversation({ file }: Props) {
   const [saveStatus, setSaveStatus] = useState('');
   const params = useParams();
   const dimension = params?.dimension?.toString().toUpperCase() || 'D1';
-  const { completeDimension } = useDimensionsProgress("jaakko");
+  const { completeDimension } = useDimensionsProgress(email);
 
   useEffect(() => {
     if (!file?.data?.questions) return;
@@ -101,7 +102,7 @@ export default function Conversation({ file }: Props) {
     setSaving(true);
     setSaveStatus('');
   
-    const username = 'jaakko';
+    const username = email;
     if (!username) {
       setSaveStatus('Username not found.');
       setSaving(false);

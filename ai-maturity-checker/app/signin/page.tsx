@@ -37,6 +37,8 @@ export default function SignInPage() {
         setError(data.error || "Sign in failed");
       } else {
         setSuccess(data.message);
+        // redirect to /home after login
+        window.location.href = "/home";
       }
     } catch {
       setError("Something went wrong. Please try again.");

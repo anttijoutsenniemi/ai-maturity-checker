@@ -8,9 +8,9 @@ import { useStepsProgress } from "@/hooks/useSteps2";
 import { useDimensionsProgress } from "@/hooks/useDimensions";
 import { useEffect } from "react";
 
-export default function HomePage() {
-  const { completedSteps, completeStep, mounted } = useStepsProgress("jaakko");
-  const { allDimensionsCompleted } = useDimensionsProgress("jaakko");
+export default function HomePage({ email }: { email: string }) {
+  const { completedSteps, completeStep, mounted } = useStepsProgress(email);
+  const { allDimensionsCompleted } = useDimensionsProgress(email);
 
   // Auto-mark step 1 complete if all dimensions done
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function HomePage() {
   return (
     <main className={styles.container}>
       <h1 className={styles.title}>Welcome to the AI capdev tool</h1>
-      <p className={styles.subtitle}>
+      <p className={styles.subtitle2}>
         Follow the steps below to get a comprehensive status on your company’s AI maturity.
       </p>
 

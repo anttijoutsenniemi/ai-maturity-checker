@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import styles from '../styles/drawer.module.css';
 import Link from 'next/link';
 
-const Drawer = () => {
+const Drawer = ({email} : {email : string}) => {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -19,6 +19,24 @@ const Drawer = () => {
     setOpen(false); // close on mobile after nav click
   };
 
+  const handleLogout = async () => {
+    const confirmed = window.confirm('Are you sure you want to log out?');
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch('/api/logout', { method: 'POST' });
+      if (res.ok) {
+        window.location.href = '/signin'; // redirect after logout
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to log out');
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+      alert('Something went wrong while logging out.');
+    }
+  };
+
   return (
     <>
       <button className={styles.hamburger} onClick={() => setOpen(!open)}>
@@ -26,12 +44,7 @@ const Drawer = () => {
       </button>
 
       {/* Overlay (only visible when open on mobile) */}
-      {open && (
-        <div
-          className={styles.overlay}
-          onClick={() => setOpen(false)}
-        />
-      )}
+      {open && <div className={styles.overlay} onClick={() => setOpen(false)} />}
 
       <nav
         className={`${styles.drawer} ${
@@ -46,7 +59,7 @@ const Drawer = () => {
             : styles.drawerHidden
         }`}
       >
-        <Link href="/" onClick={handleNavClick}>
+        <Link href="/home" onClick={handleNavClick}>
           <div className={styles.navItem}>Home</div>
         </Link>
         <Link href="/signin" onClick={handleNavClick}>
@@ -66,11 +79,18 @@ const Drawer = () => {
         <Link href="/recommendations" onClick={handleNavClick}>
           <div className={styles.navItem}>4. Get recommendations</div>
         </Link>
-        {/* <hr />
-        <h3>Reassessment steps</h3>
-        <Link href="/roadmap" onClick={handleNavClick}>
-          <div className={styles.navItem}>5. Roadmap</div>
-        </Link> */}
+
+        <hr />
+        <div className={styles.signedInAs}>Signed in as: {email}</div>
+        <button
+          className={styles.navItem}
+          onClick={() => {
+            setOpen(false); // close drawer on mobile
+            handleLogout();
+          }}
+        >
+          Log Out
+        </button>
       </nav>
     </>
   );

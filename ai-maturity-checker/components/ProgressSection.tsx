@@ -16,7 +16,7 @@ type AnswerEntry = {
   answers: { [questionId: string]: boolean };
 };
 
-export default function ProgressSection() {
+export default function ProgressSection({ email }: { email: string }) {
   const [dimensions, setDimensions] = useState<{ dimension: string; total: number }[]>([]);
   const [userAnswers, setUserAnswers] = useState<AnswerEntry[]>([]);
 
@@ -53,7 +53,7 @@ export default function ProgressSection() {
       const { data: answersData, error: answersError } = await supabase
         .from('user_answers')
         .select('answers')
-        .eq('username', 'jaakko') // TODO: replace with real user logic
+        .eq('username', email)
         .order('created_at', { ascending: false })
         .limit(1);
 
@@ -63,7 +63,7 @@ export default function ProgressSection() {
       }
 
       if (answersData && answersData[0]) {
-        // ✅ answers is actually an array of { dimension_id, answers }
+        // answers is actually an array of { dimension_id, answers }
         setUserAnswers(answersData[0].answers || []);
       }
     };
@@ -83,36 +83,44 @@ export default function ProgressSection() {
           </tr>
         </thead>
         <tbody>
-          {dimensions.map(({ dimension, total }) => {
-            // Find user answers for this dimension
-            const userDim = userAnswers.find((ua) => ua.dimension_id === dimension);
+        {dimensions.map(({ dimension, total }) => {
+          const userDim = userAnswers.find((ua) => ua.dimension_id === dimension);
 
-            const yesCount = userDim
-              ? Object.values(userDim.answers).filter((a) => a).length
-              : 0;
+          // Count only "yes"
+          const yesCount = userDim
+            ? Object.values(userDim.answers).filter((a) => a).length
+            : 0;
 
-            const percent = total > 0 ? Math.round((yesCount / total) * 100) : 0;
+          // Count all answered (true or false)
+          const answeredCount = userDim
+            ? Object.values(userDim.answers).filter(
+                (a) => a !== null && a !== undefined
+              ).length
+            : 0;
 
-            return (
-              <tr key={dimension}>
-                <td className={styles.dimension}>{dimension}</td>
-                <td>
-                  {yesCount} / {total}
-                </td>
-                <td>
-                  <div className={styles.progressBarWrapper}>
-                    <div
-                      className={classNames(styles.progressBarFill, {
-                        [styles.complete]: percent === 100,
-                      })}
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
-                  <span className={styles.percentText}>{percent}%</span>
-                </td>
-              </tr>
-            );
-          })}
+          // Progress should be based on answeredCount
+          const percent = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+
+          return (
+            <tr key={dimension}>
+              <td className={styles.dimension}>{dimension}</td>
+              <td>
+                {yesCount} / {total}
+              </td>
+              <td>
+                <div className={styles.progressBarWrapper}>
+                  <div
+                    className={classNames(styles.progressBarFill, {
+                      [styles.complete]: percent === 100,
+                    })}
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+                <span className={styles.percentText}>{percent}%</span>
+              </td>
+            </tr>
+          );
+        })}
         </tbody>
       </table>
     </div>

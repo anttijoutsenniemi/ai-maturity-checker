@@ -1,19 +1,20 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/utils/supabase/middleware'
+import { NextRequest, NextResponse } from 'next/server';
+import { updateSession } from '@/utils/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+  // Skip API routes we want to allow
+  const publicApiRoutes = ['/api/signin', '/api/signup'];
+  if (publicApiRoutes.includes(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
+  // Otherwise, run Supabase session logic
+  return await updateSession(request);
 }
 
+// Match everything except Next.js internals and static files
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
-}
+};

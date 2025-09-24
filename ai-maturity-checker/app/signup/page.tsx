@@ -38,6 +38,7 @@ export default function SignUpPage() {
         setError(data.error || "Sign up failed");
       } else {
         setSuccess(data.message);
+        window.location.href = "/home";
       }
     } catch {
       setError("Something went wrong. Please try again.");

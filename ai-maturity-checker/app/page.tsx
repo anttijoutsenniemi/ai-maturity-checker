@@ -5,7 +5,7 @@ export default function FrontPage() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Welcome to My App</h1>
+        <h1 className={styles.title}>Welcome to AI CapDev tool</h1>
         <div className={styles.links}>
           <Link href="/signin" className={styles.link}>
             Sign In

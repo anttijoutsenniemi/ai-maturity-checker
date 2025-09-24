@@ -1,12 +1,12 @@
 import { getCurrentUserEmail } from "@/app/lib/getCurrentUser"
-import ResultsPage from "./ResultsClient"
+import HomePage from "./HomePageClient"
 
-export default async function ResultsServer() {
+export default async function HomePageServer() {
   const email = await getCurrentUserEmail() // runs on server
 
   if (!email) {
     return <div>No user found</div>
   }
 
-  return <ResultsPage email={email} />
+  return <HomePage email={email} />
 }

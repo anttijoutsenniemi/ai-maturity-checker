@@ -1,28 +1,25 @@
 import { NextResponse } from "next/server";
-import { validateCredentials } from "@/utils/validation";
-import { supabase } from "@/app/lib/supabaseClient";
+import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: Request) {
-  try {
-    const { email, password } = await req.json();
+  const { email, password } = await req.json();
 
-    const error = validateCredentials(email, password);
-    if (error) {
-      return NextResponse.json({ error }, { status: 400 });
-    }
+  // Supabase server client for API route
+  const supabase = await createClient();
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (signInError) {
-      return NextResponse.json({ error: signInError.message }, { status: 400 });
-    }
-    
-    return NextResponse.json({ message: "Sign in successful", user: data.user });
-  } catch (err) {
-    console.error("Sign in error:", err);
-    return NextResponse.json({ error: "Failed to process sign in" }, { status: 500 });
+  if (error) {
+    console.error("Supabase signIn error:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
+
+  // Just return JSON; no NextResponse.next needed
+  return NextResponse.json({
+    message: "Sign in successful",
+    user: data.user,
+  });
 }

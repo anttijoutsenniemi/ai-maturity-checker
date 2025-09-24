@@ -30,7 +30,7 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
 
   return (
     <div className={styles.wrapper}>
-      <Drawer />
+      <Drawer email={user.email || "unknown"}/>
       <main className={styles.mainContent}>{children}</main>
     </div>
   );
