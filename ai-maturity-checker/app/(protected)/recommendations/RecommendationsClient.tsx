@@ -189,7 +189,7 @@ export default function RecommendationsPage({email}: {email: string}) {
 
   return (
     <div className={styles.container}>
-      <h1>Recommendations</h1>
+      <h1>4. Recommendations</h1>
       <h3>In this page you will get all the info on how to level up your companys AI skills & adoptation</h3>
 
       <section>

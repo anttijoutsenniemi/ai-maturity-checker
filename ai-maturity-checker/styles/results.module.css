@@ -10,6 +10,10 @@
     color: #1e3a8a; /* blue-800 */
     margin-bottom: 1.5rem;
   }
+
+  .subtitle {
+    margin-bottom: 20;
+  }
   
   .tableWrapper {
     overflow-x: auto;

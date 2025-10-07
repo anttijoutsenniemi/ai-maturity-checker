@@ -75,7 +75,7 @@ export default function QuestionsPage({ email }: { email: string }) {
         )}
       </div>
 
-      <h1 className={styles.title}>Available Questionnaires</h1>
+      <h1 className={styles.title}>1. Available Questionnaires</h1>
       <div className={styles.buttonList}>
         {dimensionInfo.map(({ dimension, title }) => (
           <div key={dimension} className={styles.buttonGroup}>

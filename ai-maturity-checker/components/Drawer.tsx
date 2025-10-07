@@ -24,6 +24,7 @@ const Drawer = ({email} : {email : string}) => {
     if (!confirmed) return;
 
     try {
+      localStorage.clear();
       const res = await fetch('/api/logout', { method: 'POST' });
       if (res.ok) {
         window.location.href = '/signin'; // redirect after logout

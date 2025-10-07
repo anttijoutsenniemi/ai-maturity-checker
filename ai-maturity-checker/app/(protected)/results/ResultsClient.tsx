@@ -40,7 +40,7 @@ export default function ResultsPage({email}: {email : string}) {
   const [loading, setLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const { completeStep } = useStepsProgress("jaakko");
+  const { completeStep } = useStepsProgress(email);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +50,7 @@ export default function ResultsPage({email}: {email : string}) {
         supabase
           .from('user_answers')
           .select('answers')
-          .eq('username', 'jaakko')
+          .eq('username', email)
           .order('created_at', { ascending: false })
           .limit(1),
       ])
@@ -94,7 +94,7 @@ export default function ResultsPage({email}: {email : string}) {
   }
 
   const savePriority = async () => {
-    let username = "jaakko";
+    let username = email;
     const priorityDimensions = Object.keys(priorityToggles).filter(dim => priorityToggles[dim])
   
     setLoading(true)
@@ -127,7 +127,7 @@ export default function ResultsPage({email}: {email : string}) {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Results from your answers</h1>
+      <h1 className={styles.title}>2. Results & Save Priority</h1>
       <h3 className={styles.subtitle}>Save your companys priority by checking the box/boxes and clicking Save priorities</h3>
       <div className={styles.tableWrapper}>
         <table className={styles.table}>

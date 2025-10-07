@@ -4,6 +4,13 @@
     flex-direction: column;
     gap: 2rem;
   }
+
+  .title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1e3a8a; /* blue-800 */
+    margin-bottom: 1.5rem;
+  }
   
   /* Toggle buttons */
   .toggleRow {

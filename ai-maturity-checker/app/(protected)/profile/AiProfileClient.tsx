@@ -123,6 +123,7 @@ export default function AiProfileClient({ email }: { email: string }) {
 
   return (
     <div className={styles.container}>
+      <h1 className={styles.title}>3. Analysis & Planning</h1>
       {/* Toggle buttons */}
       <div className={styles.toggleRow}>
         <button
