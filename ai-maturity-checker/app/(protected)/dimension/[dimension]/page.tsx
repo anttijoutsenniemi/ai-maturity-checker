@@ -8,31 +8,27 @@ type Question = {
   answers: { text: string }[];
 };
 
-// ✅ Keep `params` as possibly a Promise
-type Props = {
-  params: { dimension: string } | Promise<{ dimension: string }>;
-};
-
-export default async function DimensionServer({ params }: Props) {
-  // ✅ Await params for dynamic routes (Next.js requirement)
-  const resolvedParams = await params;
-  const dimensionParam = resolvedParams.dimension;
-
+export default async function DimensionServer({
+  params,
+}: {
+  params: Promise<{ dimension: string }>;
+}) {
+  const { dimension } = await params;
   const email = await getCurrentUserEmail();
   if (!email) return <div>No user found</div>;
 
   const supabase = await createClient();
-  const dimension = dimensionParam.toUpperCase();
+  const dim = dimension.toUpperCase();
 
   // Fetch total dimensions
   const { data: topicsData } = await supabase.from("topics").select("id");
-  const totalDimensions = topicsData ? topicsData.length : 0;
+  const totalDimensions = topicsData?.length ?? 0;
 
   // Fetch questions
   const { data: questionData, error: questionError } = await supabase
     .from("Questions")
     .select("*")
-    .ilike("dimension", `${dimension}-%`)
+    .ilike("dimension", `${dim}-%`)
     .order("dimension", { ascending: true });
 
   if (questionError) {
@@ -45,9 +41,9 @@ export default async function DimensionServer({ params }: Props) {
       id: q.id,
       question: q.question,
       answers: q.answers.map((text: string) => ({ text })),
-    })) || [];
+    })) ?? [];
 
-  // Fetch user answers for this dimension
+  // Fetch user answers
   const { data: userData } = await supabase
     .from("user_answers")
     .select("answers")
@@ -56,11 +52,11 @@ export default async function DimensionServer({ params }: Props) {
     .single();
 
   const userProgress = Array.isArray(userData?.answers)
-    ? userData.answers.find((d: any) => d.dimension_id === dimension)
+    ? userData.answers.find((d: any) => d.dimension_id === dim)
     : null;
 
   // Check next dimension existence
-  const nextDim = `D${parseInt(dimension.slice(1), 10) + 1}`;
+  const nextDim = `D${parseInt(dim.slice(1), 10) + 1}`;
   const { data: nextData } = await supabase
     .from("Questions")
     .select("id")
@@ -72,7 +68,7 @@ export default async function DimensionServer({ params }: Props) {
   return (
     <DimensionClient
       email={email}
-      dimension={dimension}
+      dimension={dim}
       questions={questions}
       totalDimensions={totalDimensions}
       nextExists={nextExists}

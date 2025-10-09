@@ -69,7 +69,7 @@ export default function Roadmap({ levels, userAnswers }: RoadmapProps) {
         .flatMap((qid) => level.actions?.[qid] || [])
         .filter(Boolean)
   
-      // ✅ Normalize fair_services
+        //n
       let allFairServices: string[] = []
   
       if (level.fair_services && typeof level.fair_services === 'object') {

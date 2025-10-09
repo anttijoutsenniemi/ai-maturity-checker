@@ -1,4 +1,3 @@
-// app/home/page.tsx
 import Link from "next/link";
 import { getCurrentUserEmail } from "@/app/lib/getCurrentUser";
 import HomePage from "./HomePageClient";
@@ -19,7 +18,7 @@ export default async function HomePageServer() {
 
   const isAdmin = await checkIfAdmin();
 
-  // ✅ Fetch total dimensions server-side
+  // Fetch total dimensions server-side
   const { data: topicsData, error } = await supabase.from("topics").select("id");
   const totalDimensions = topicsData ? topicsData.length : 0;
 
