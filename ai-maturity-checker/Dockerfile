@@ -25,7 +25,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Use .env.example for production builds
-#COPY .env.example .env.local
+COPY .env.example .env.local
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
