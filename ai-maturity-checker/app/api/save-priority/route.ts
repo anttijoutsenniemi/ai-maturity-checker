@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+import "server-only";
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
