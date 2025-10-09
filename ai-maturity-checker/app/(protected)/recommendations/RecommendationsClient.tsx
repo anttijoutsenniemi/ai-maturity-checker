@@ -134,7 +134,7 @@ export default function RecommendationsPage({email}: {email: string}) {
           <th>Capability Level</th>
           <th>Improvement Actions</th>
           <th>FAIR Services</th>
-          <th>Level Specific Actions</th>
+          {/* <th>Level Specific Actions</th> */}
         </tr>
       </thead>
       <tbody>
@@ -169,7 +169,7 @@ export default function RecommendationsPage({email}: {email: string}) {
                   "-"
                 )}
               </td>
-              <td>
+              {/* <td>
                 {cl.level_actions?.length > 0 ? (
                   <ul>
                     {cl.level_actions.map((la) => (
@@ -179,7 +179,7 @@ export default function RecommendationsPage({email}: {email: string}) {
                 ) : (
                   "-"
                 )}
-              </td>
+              </td> */}
             </tr>
           )
         })}
