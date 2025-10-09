@@ -1,7 +1,6 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
-import { supabase } from '@/app/lib/supabaseClient';
-import { useParams } from 'next/navigation';
 import { useDimensionsProgress } from '@/hooks/useDimensions';
 import styles from '@/styles/Conversation.module.css';
 
@@ -30,9 +29,11 @@ interface Props {
     };
   };
   email: string;
+  totalDimensions: number;
+  dimension: string;
 }
 
-export default function Conversation({ file, email }: Props) {
+export default function Conversation({ file, email, totalDimensions, dimension }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [conversation, setConversation] = useState<QA[]>([]);
   const [extraInfo, setExtraInfo] = useState('');
@@ -42,10 +43,9 @@ export default function Conversation({ file, email }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
-  const params = useParams();
-  const dimension = params?.dimension?.toString().toUpperCase() || 'D1';
-  const { completeDimension } = useDimensionsProgress(email);
+  const { completeDimension } = useDimensionsProgress(email, totalDimensions);
 
+  // Initialize conversation with first question only
   useEffect(() => {
     if (!file?.data?.questions) return;
     const qs = file.data.questions;
@@ -69,9 +69,7 @@ export default function Conversation({ file, email }: Props) {
       const rootIndex = questions.findIndex(q => q.id === conversation[0].question.id);
       const nextIndex = rootIndex + updated.filter(q => !q.path.includes('.')).length;
       const next = questions[nextIndex];
-      if (next) {
-        updated.push({ question: next, path: next.id });
-      }
+      if (next) updated.push({ question: next, path: next.id });
     }
 
     setConversation(updated);
@@ -86,14 +84,14 @@ export default function Conversation({ file, email }: Props) {
     setShowSummary(false);
   };
 
+  // Scroll to bottom on new messages
   useEffect(() => {
     if (editingIndex === null) {
       containerRef.current?.scrollTo({
         top: containerRef.current.scrollHeight,
         behavior: 'smooth',
       });
-    }
-    else{
+    } else {
       setEditingIndex(null);
     }
   }, [conversation, showSummary]);
@@ -101,84 +99,38 @@ export default function Conversation({ file, email }: Props) {
   const handleSave = async () => {
     setSaving(true);
     setSaveStatus('');
-  
-    const username = email;
-    if (!username) {
-      setSaveStatus('Username not found.');
-      setSaving(false);
-      return;
-    }
-    console.log('Conversation before saving:', conversation);
-    // const answers: Record<string, boolean> = {};
-    // conversation.forEach((qa) => {
-    //   if (qa.selectedAnswer) {
-    //     const questionKey = `${dimension}-${qa.question.id}`;
-    //     answers[questionKey] = qa.selectedAnswer.toLowerCase() === 'yes';
-    //   }
-    // });
-    const answers: Record<string, boolean> = {};
-    conversation.forEach((qa, index) => {
-      if (qa.selectedAnswer) {
-        const questionKey = `${dimension}-Q${index + 1}`;
-        answers[questionKey] = qa.selectedAnswer.toLowerCase() === 'yes';
-      }
-    });
-    
-    console.log('Answers to be saved:', answers);
-  
-    const newDimensionData = {
-      dimension_id: dimension,
-      notes: extraInfo,
-      answers,
+
+    const payload = {
+      email,
+      dimension,
+      conversation: conversation.map((qa) => ({
+        questionId: qa.question.id,
+        selectedAnswer: qa.selectedAnswer || '',
+      })),
+      extraInfo,
     };
-  
-    // Try to find existing row by username
-    const { data: existingRow, error: fetchError } = await supabase
-      .from('user_answers')
-      .select('id, answers')
-      .eq('username', username)
-      .single();
-  
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      setSaveStatus(`Fetch error: ${fetchError.message}`);
+
+    try {
+      const res = await fetch('/api/save-answers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSaveStatus('Saved!');
+        completeDimension(dimension);
+      } else {
+        setSaveStatus(`Error: ${data.error}`);
+      }
+    } catch (err: any) {
+      setSaveStatus(`Error: ${err.message}`);
+    } finally {
       setSaving(false);
-      return;
     }
-  
-    if (existingRow) {
-      // Update the dimension inside the existing answers
-      const updatedAnswers = Array.isArray(existingRow.answers)
-        ? existingRow.answers.filter((d: any) => d.dimension_id !== dimension)
-        : [];
-  
-      updatedAnswers.push(newDimensionData);
-  
-      const { error: updateError } = await supabase
-        .from('user_answers')
-        .update({
-          answers: updatedAnswers,
-          updated_at: new Date(),
-        })
-        .eq('id', existingRow.id);
-  
-      setSaveStatus(updateError ? `Error: ${updateError.message}` : 'Saved!');
-    } else {
-      // Insert new row
-      const { error: insertError } = await supabase
-        .from('user_answers')
-        .insert([
-          {
-            username,
-            answers: [newDimensionData],
-          },
-        ]);
-  
-      setSaveStatus(insertError ? `Error: ${insertError.message}` : 'Saved!');
-    }
-    completeDimension(dimension);
-    setSaving(false);
   };
-  
 
   return (
     <div className={styles.chatContainer} ref={containerRef}>
@@ -242,45 +194,41 @@ export default function Conversation({ file, email }: Props) {
             {conversation.map((qa, index) => (
               <div key={qa.path} className={styles.qaItem}>
                 <h4 className={styles.qaQuestion}>{qa.question.question}</h4>
-                {/* sd */}
                 {editingIndex === index ? (
-                <div className={styles.answersContainer}>
-                  <button
-                    className={styles.gradient_button}
-                    onClick={() => {
-                      const updated = [...conversation];
-                      updated[index].selectedAnswer = 'Yes';
-                      setConversation(updated);
-                      setEditingIndex(null);
-                    }}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    className={styles.gradient_button}
-                    onClick={() => {
-                      const updated = [...conversation];
-                      updated[index].selectedAnswer = 'No';
-                      setConversation(updated);
-                    }}
-                  >
-                    No
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className={styles.qaAnswer}>{qa.selectedAnswer}</div>
-                  <button
-                    className={styles.editButton}
-                    onClick={() => setEditingIndex(index)}
-                  >
-                    Edit
-                  </button>
-                </>
-              )}
-
-                {/* <div className={styles.qaAnswer}>{qa.selectedAnswer}</div> */}
-                {/* sd */}
+                  <div className={styles.answersContainer}>
+                    <button
+                      className={styles.gradient_button}
+                      onClick={() => {
+                        const updated = [...conversation];
+                        updated[index].selectedAnswer = 'Yes';
+                        setConversation(updated);
+                        setEditingIndex(null);
+                      }}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      className={styles.gradient_button}
+                      onClick={() => {
+                        const updated = [...conversation];
+                        updated[index].selectedAnswer = 'No';
+                        setConversation(updated);
+                      }}
+                    >
+                      No
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.qaAnswer}>{qa.selectedAnswer}</div>
+                    <button
+                      className={styles.editButton}
+                      onClick={() => setEditingIndex(index)}
+                    >
+                      Edit
+                    </button>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -291,15 +239,16 @@ export default function Conversation({ file, email }: Props) {
               <p className={styles.extraInfoContent}>{extraInfo}</p>
             </>
           )}
-                      <button
-              className={styles.saveButton}
-              onClick={handleSave}
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Save answers'}
-            </button>
 
-            {saveStatus && <div className={styles.saveStatus}>{saveStatus}</div>}
+          <button
+            className={styles.saveButton}
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? 'Saving...' : 'Save answers'}
+          </button>
+
+          {saveStatus && <div className={styles.saveStatus}>{saveStatus}</div>}
         </div>
       )}
     </div>

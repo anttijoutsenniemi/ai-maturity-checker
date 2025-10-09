@@ -1,23 +1,18 @@
 "use client";
 
 import { CheckCircle, Circle } from "lucide-react";
-import styles from "@/styles/frontpage.module.css";
+import styles from '@/styles/frontpage.module.css';
 import Link from "next/link";
 import { stepsConfig } from "@/config/stepsConfig";
 import { useStepsProgress } from "@/hooks/useSteps2";
 import { useDimensionsProgress } from "@/hooks/useDimensions";
 import { useEffect } from "react";
 
-interface HomePageProps {
-  email: string;
-  totalDimensions: number;
-}
-
-export default function HomePage({ email, totalDimensions }: HomePageProps) {
+export default function HomePage({ email }: { email: string }) {
   const { completedSteps, completeStep, mounted } = useStepsProgress(email);
-  const { allDimensionsCompleted } = useDimensionsProgress(email, totalDimensions);
+  const { allDimensionsCompleted } = useDimensionsProgress(email);
 
-  // Auto-mark step 1 complete if all dimensions are completed
+  // Auto-mark step 1 complete if all dimensions done
   useEffect(() => {
     if (allDimensionsCompleted) {
       completeStep(1);
@@ -28,12 +23,12 @@ export default function HomePage({ email, totalDimensions }: HomePageProps) {
     return <p style={{ textAlign: "center", padding: "2rem" }}>Loading…</p>;
   }
 
-  // Split the steps into prerequisite and reassessment
+  // Split the steps into prerequisite + reassessment
   const prerequisiteSteps = stepsConfig.slice(0, 4);
   const reassessmentSteps = stepsConfig.slice(4);
 
-  // Helper to render a step card
-  const renderStep = (step: typeof stepsConfig[0]) => {
+  // helper to render a step card
+  const renderStep = (step: (typeof stepsConfig)[0]) => {
     const isCompleted = completedSteps.includes(step.id);
     return (
       <div key={step.id} className={styles.stepCard}>
@@ -76,9 +71,8 @@ export default function HomePage({ email, totalDimensions }: HomePageProps) {
       {/* thin grey line separator */}
       <hr className={styles.divider} />
 
-      {/* === Reassessment steps (optional) === */}
-      {/* Uncomment if reassessment steps should be shown */}
-      {/*
+      {/* === Reassessment steps === */}
+      {/* 
       <h2 className={styles.sectionTitle}>Reassessment steps (optional)</h2>
       <p className={styles.subtitle2}>
         In reassessment steps you can level up your company’s AI maturity and track your progress going forward.
