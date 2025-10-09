@@ -39,7 +39,7 @@ COPY --from=deps /opt/app-root/src/node_modules ./node_modules
 COPY . .
 
 # Copy environment example
-COPY .env.example .env.local
+# COPY .env.example .env.local
 
 # Ensure proper permissions before build
 USER root
