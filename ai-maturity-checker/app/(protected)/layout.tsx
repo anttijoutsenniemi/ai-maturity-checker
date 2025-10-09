@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import '@/app/globals.css';
 import { ReactNode } from 'react';
 import Link from 'next/link';
