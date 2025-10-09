@@ -1,25 +1,13 @@
 # syntax=docker.io/docker/dockerfile:1
-# Optimized for Next.js on Red Hat UBI/OpenShift
-
-# ----------------------------
-# Base image
-# ----------------------------
+# This image is optimized for running Next.js applications in Rahti-2 and OpenShift environments.
 FROM registry.access.redhat.com/ubi8/nodejs-20:latest AS base
 
+# Install dependencies only when needed
+FROM base AS deps
 WORKDIR /opt/app-root/src
 
-# Disable Next.js telemetry
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# ----------------------------
-# Dependencies stage
-# ----------------------------
-FROM base AS deps
-
-# Copy package manifests and lockfiles
+# Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
-
-# Install dependencies
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
@@ -27,58 +15,49 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# ----------------------------
-# Builder stage
-# ----------------------------
+# Rebuild the source code only when needed
 FROM base AS builder
-
-# Copy dependencies from deps stage
+WORKDIR /opt/app-root/src
 COPY --from=deps /opt/app-root/src/node_modules ./node_modules
-
-# Copy full source code
 COPY . .
 
-# Copy environment example
+# Next.js collects completely anonymous telemetry data about general usage.
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Use .env.example for production builds
 COPY .env.example .env.local
 
-# Ensure proper permissions before build
-USER root
-RUN chmod -R g+rwX /opt/app-root/src
-USER 1001
-
-# Build Next.js
 RUN \
-  if [ -f yarn.lock ]; then yarn build; \
+  if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# ----------------------------
-# Runner stage
-# ----------------------------
+# Production image, copy all the files and run next
 FROM base AS runner
-
 WORKDIR /opt/app-root/src
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
 
-# Copy public folder
+# Set the correct permission for prerender cache
+RUN mkdir -p .next/cache/images
 COPY --from=builder /opt/app-root/src/public ./public
 
-# Copy Next.js standalone output and static files
-COPY --from=builder /opt/app-root/src/.next/standalone ./ 
+# Automatically leverage output traces to reduce image size
+COPY --from=builder /opt/app-root/src/.next/standalone ./
 COPY --from=builder /opt/app-root/src/.next/static ./.next/static
 
-# Ensure OpenShift-friendly permissions
+# Fix permissions for OpenShift/UBI environment
+# Using more OpenShift-friendly approach for permissions
 USER root
 RUN chmod -R g+rwX /opt/app-root/src
 USER 1001
 
 EXPOSE 3000
 
-# Start the Next.js server
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
 CMD ["node", "server.js"]
