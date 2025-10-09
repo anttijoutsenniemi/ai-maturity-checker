@@ -54,9 +54,6 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# delete dummy env
-RUN rm -f .env.local
-
 # ----------------------------
 # Runner stage
 # ----------------------------
