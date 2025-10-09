@@ -8,15 +8,15 @@ type Question = {
   answers: { text: string }[];
 };
 
-// Props type for App Router server component
+// ✅ Keep `params` as possibly a Promise
 type Props = {
   params: { dimension: string } | Promise<{ dimension: string }>;
 };
 
-export default async function DimensionServer(props: Props) {
-  // ✅ Await params before using
-  const params = await props.params;
-  const dimensionParam = params.dimension;
+export default async function DimensionServer({ params }: Props) {
+  // ✅ Await params for dynamic routes (Next.js requirement)
+  const resolvedParams = await params;
+  const dimensionParam = resolvedParams.dimension;
 
   const email = await getCurrentUserEmail();
   if (!email) return <div>No user found</div>;
