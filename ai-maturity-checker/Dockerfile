@@ -39,7 +39,7 @@ COPY --from=deps /opt/app-root/src/node_modules ./node_modules
 COPY . .
 
 # Copy environment example
-# COPY .env.example .env.local
+COPY .env.example .env.local
 
 # Ensure proper permissions before build
 USER root
@@ -53,6 +53,9 @@ RUN \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi
+
+# delete dummy env
+RUN rm -f .env.local
 
 # ----------------------------
 # Runner stage
