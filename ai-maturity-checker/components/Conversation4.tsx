@@ -29,11 +29,16 @@ interface Props {
     };
   };
   email: string;
-  totalDimensions: number;
-  dimension: string;
+  totalDimensions?: number;
+  dimension?: string;
 }
 
 export default function Conversation({ file, email, totalDimensions, dimension }: Props) {
+
+  if(!totalDimensions || !dimension){
+    return (<div>No props</div>);
+  }
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [conversation, setConversation] = useState<QA[]>([]);
   const [extraInfo, setExtraInfo] = useState('');
