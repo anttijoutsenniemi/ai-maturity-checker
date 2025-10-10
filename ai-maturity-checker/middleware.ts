@@ -3,7 +3,7 @@ import { updateSession } from '@/utils/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
   // Skip API routes we want to allow
-  const publicApiRoutes = ['/api/signin', '/api/signup'];
+  const publicApiRoutes = ['/api/signin', '/api/signup', '/admin'];
   if (publicApiRoutes.includes(request.nextUrl.pathname)) {
     return NextResponse.next();
   }

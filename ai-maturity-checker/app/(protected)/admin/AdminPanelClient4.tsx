@@ -29,11 +29,15 @@ type ChangeRecord = {
 };
 
 interface Props {
-  topics: Topic[];
-  capabilityLevels: CapabilityLevel[];
+  topics?: Topic[];
+  capabilityLevels?: CapabilityLevel[];
 }
 
 export default function AdminPanelClient({ topics: initialTopics, capabilityLevels: initialLevels }: Props) {
+  if(!initialTopics || !initialLevels){
+    return (<div>no props</div>);
+  }
+  
   const [topics, setTopics] = useState(initialTopics);
   const [capabilityLevels, setCapabilityLevels] = useState(initialLevels);
   const [changes, setChanges] = useState<ChangeRecord[]>([]);
