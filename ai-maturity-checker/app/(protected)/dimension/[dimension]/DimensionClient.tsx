@@ -12,11 +12,11 @@ interface Question {
 }
 
 interface Props {
-  email: string;
-  dimension: string;
-  questions: Question[];
-  nextExists: boolean;
-  totalDimensions: number;
+  email?: string;
+  dimension?: string;
+  questions?: Question[];
+  nextExists?: boolean;
+  totalDimensions?: number;
 }
 
 export default function DimensionClient({
@@ -27,6 +27,10 @@ export default function DimensionClient({
   totalDimensions,
 }: Props) {
   const router = useRouter();
+
+  if(!email || !dimension || !questions || !nextExists || !totalDimensions){
+    return <div>no props</div>
+  }
 
   if (!questions?.length) {
     return (

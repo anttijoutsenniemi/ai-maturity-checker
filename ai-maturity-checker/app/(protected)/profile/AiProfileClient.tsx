@@ -20,12 +20,12 @@ type CapabilityLevel = {
 };
 
 type Props = {
-  email: string;
-  topics: Topic[];
-  capabilityLevels: CapabilityLevel[];
-  currentLevels: string[];
-  gapLevels: string[];
-  priorityLevels: string[];
+  email?: string;
+  topics?: Topic[];
+  capabilityLevels?: CapabilityLevel[];
+  currentLevels?: string[];
+  gapLevels?: string[];
+  priorityLevels?: string[];
 };
 
 export default function AiProfileClient({
@@ -36,6 +36,10 @@ export default function AiProfileClient({
   gapLevels,
   priorityLevels,
 }: Props) {
+
+  if(!email || !topics || !capabilityLevels || !currentLevels || !gapLevels || !priorityLevels){
+    return <div>no props</div>
+  }
   const [showCurrent, setShowCurrent] = useState(true);
   const [showGap, setShowGap] = useState(true);
   const [showPriority, setShowPriority] = useState(true);

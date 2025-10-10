@@ -22,7 +22,7 @@ export default async function AiProfileServer() {
 
   const supabase = await createClient();
 
-  // --- 1️⃣ Fetch topics ---
+  // --- 1️ Fetch topics ---
   const { data: topicsData, error: topicsError } = await supabase
     .from("topics")
     .select("id, title, dimension");
@@ -31,7 +31,7 @@ export default async function AiProfileServer() {
     return <div>Error loading data</div>;
   }
 
-  // --- 2️⃣ Fetch capability levels ---
+  // --- 2️ Fetch capability levels ---
   const { data: clData, error: clError } = await supabase
     .from("capability_levels")
     .select("dimension_id, cl_short, capability_level, question_ids");
@@ -40,7 +40,7 @@ export default async function AiProfileServer() {
     return <div>Error loading data</div>;
   }
 
-  // --- 3️⃣ Fetch user answers to compute current levels ---
+  // --- 3️ Fetch user answers to compute current levels ---
   const { data: uaData } = await supabase
     .from("user_answers")
     .select("answers")
