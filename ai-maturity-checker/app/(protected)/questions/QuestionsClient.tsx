@@ -19,9 +19,9 @@ type ProgressData = {
 };
 
 type Props = {
-  email?: string;
-  dimensionInfo?: DimensionInfo[];
-  progressData?: ProgressData[];
+  email: string;
+  dimensionInfo: DimensionInfo[];
+  progressData: ProgressData[];
 };
 
 export default function QuestionsPage({ email, dimensionInfo = [], progressData = [] }: Props) {

@@ -1,7 +1,8 @@
-// app/recommendations/RecommendationsServer.tsx
 import { getCurrentUserEmail } from "@/app/lib/getCurrentUser";
 import RecommendationsPage from "./RecommendationsClient";
 import { createClient } from "@/utils/supabase/server";
+
+export const dynamic = "force-dynamic"; // runtime-only
 
 type CapabilityLevel = {
   cl_short: string;
@@ -19,32 +20,48 @@ type UserAnswer = {
 };
 
 export default async function RecommendationsServer() {
-  const email = await getCurrentUserEmail();
-  if (!email) return <div>No user found</div>;
+  let email = "unknown";
+  let allLevels: CapabilityLevel[] = [];
+  let userAnswers: UserAnswer[] = [];
+  let priorities: any = {};
+  let deps: any[] = [];
 
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  // Fetch all needed tables in parallel
-  const [
-    { data: clData },
-    { data: uaData },
-    { data: priorities },
-    { data: deps },
-  ] = await Promise.all([
-    supabase
-      .from("capability_levels")
-      .select("dimension_id,cl_short,capability_level,question_ids,actions,fair_services,level_actions"),
-    supabase.from("user_answers").select("answers").eq("username", email).single(),
-    supabase.from("user_priorities").select("priority_dimensions").eq("username", email).single(),
-    supabase.from("level_dependencies").select("level, dependencies"),
-  ]);
+    const currentEmail = await getCurrentUserEmail();
+    if (!currentEmail) return <div>No user found</div>;
+    email = currentEmail;
 
-  const allLevels: CapabilityLevel[] = clData || [];
-  const userAnswers: UserAnswer[] =
-    typeof uaData?.answers === "string" ? JSON.parse(uaData.answers) : uaData?.answers || [];
+    // Fetch all needed tables in parallel
+    const [
+      { data: clData },
+      { data: uaData },
+      { data: prData },
+      { data: depData },
+    ] = await Promise.all([
+      supabase
+        .from("capability_levels")
+        .select(
+          "dimension_id,cl_short,capability_level,question_ids,actions,fair_services,level_actions"
+        ),
+      supabase.from("user_answers").select("answers").eq("username", email).single(),
+      supabase.from("user_priorities").select("priority_dimensions").eq("username", email).single(),
+      supabase.from("level_dependencies").select("level, dependencies"),
+    ]);
+
+    allLevels = clData || [];
+    userAnswers =
+      typeof uaData?.answers === "string" ? JSON.parse(uaData.answers) : uaData?.answers || [];
+    priorities = prData || {};
+    deps = depData || [];
+  } catch (err) {
+    console.warn("Supabase unavailable or fetch failed, using fallback data:", err);
+    // fallback variables already initialized
+  }
 
   // Determine completed levels
-  let completed: string[] = [];
+  const completed: string[] = [];
   for (const dim of userAnswers) {
     for (const lvl of allLevels) {
       if (lvl.dimension_id === dim.dimension_id) {
@@ -62,7 +79,7 @@ export default async function RecommendationsServer() {
 
   // Determine dependency-based gap levels
   let gapShorts: string[] = [];
-  if (deps) {
+  if (deps.length) {
     const needed = deps
       .filter((d: any) => desiredShorts.includes(d.level))
       .flatMap((d: any) => d.dependencies || []);

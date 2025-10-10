@@ -12,11 +12,11 @@ interface Question {
 }
 
 interface Props {
-  email?: string;
-  dimension?: string;
-  questions?: Question[];
-  nextExists?: boolean;
-  totalDimensions?: number;
+  email: string;
+  dimension: string;
+  questions: Question[];
+  nextExists: boolean;
+  totalDimensions: number;
 }
 
 export default function DimensionClient({

@@ -29,8 +29,8 @@ type ChangeRecord = {
 };
 
 interface Props {
-  topics?: Topic[];
-  capabilityLevels?: CapabilityLevel[];
+  topics: Topic[];
+  capabilityLevels: CapabilityLevel[];
 }
 
 export default function AdminPanelClient({ topics: initialTopics, capabilityLevels: initialLevels }: Props) {

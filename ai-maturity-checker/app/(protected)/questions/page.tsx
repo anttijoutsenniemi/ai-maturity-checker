@@ -2,6 +2,8 @@ import { getCurrentUserEmail } from "@/app/lib/getCurrentUser";
 import QuestionsPage from "./QuestionsClient";
 import { createClient } from "@/utils/supabase/server";
 
+export const dynamic = "force-dynamic"; // runtime-only
+
 type DimensionInfo = {
   dimension: string;
   title: string;
@@ -16,23 +18,59 @@ type ProgressData = {
 };
 
 export default async function QuestionsServer() {
-  const email = await getCurrentUserEmail();
-  if (!email) return <div>No user found</div>;
+  let email = "unknown";
+  let questionsData: { id: string; dimension: string }[] = [];
+  let topicsData: { dimension: string; title: string }[] = [];
+  let userAnswers: any[] = [];
 
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  // --- Fetch all questions ---
-  const { data: questionsData, error: questionsError } = await supabase
-    .from("Questions")
-    .select("id, dimension");
+    const currentEmail = await getCurrentUserEmail();
+    if (!currentEmail) return <div>No user found</div>;
+    email = currentEmail;
 
-  if (questionsError) {
-    console.error("Failed to fetch questions:", questionsError.message);
-    return <div>Error loading data</div>;
+    // Fetch all questions
+    const { data: qData, error: qError } = await supabase
+      .from("Questions")
+      .select("id, dimension");
+    if (qError) console.error("Failed to fetch questions:", qError.message);
+    questionsData = qData || [];
+
+    // Extract unique dimensions
+    const uniqueDimensions = Array.from(
+      new Set(questionsData.map((q) => q.dimension.split("-")[0]))
+    );
+
+    // Fetch topics for these dimensions
+    const { data: tData, error: tError } = await supabase
+      .from("topics")
+      .select("dimension, title")
+      .in(
+        "dimension",
+        uniqueDimensions.length > 0 ? uniqueDimensions : [""]
+      );
+    if (tError) console.error("Failed to fetch topics:", tError.message);
+    topicsData = tData || [];
+
+    // Fetch latest user answers
+    const { data: uaData } = await supabase
+      .from("user_answers")
+      .select("answers")
+      .eq("username", email)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    userAnswers = uaData?.answers || [];
+
+  } catch (err) {
+    console.warn("Supabase unavailable or fetch failed, using fallback data:", err);
+    // fallback variables already initialized
   }
 
+  // Build dimension info
   const dimensionMap: Record<string, number> = {};
-  questionsData?.forEach((q) => {
+  questionsData.forEach((q) => {
     const dim = q.dimension.split("-")[0];
     dimensionMap[dim] = (dimensionMap[dim] || 0) + 1;
   });
@@ -43,36 +81,15 @@ export default async function QuestionsServer() {
     return numA - numB;
   });
 
-  // --- Fetch topics ---
-  const { data: topicsData, error: topicsError } = await supabase
-    .from("topics")
-    .select("dimension, title")
-    .in("dimension", uniqueDimensions);
-
-  if (topicsError) {
-    console.error("Failed to fetch topics:", topicsError.message);
-    return <div>Error loading data</div>;
-  }
-
   const dimensionInfo: DimensionInfo[] = uniqueDimensions.map((dim) => {
-    const topic = topicsData?.find((t) => t.dimension === dim);
+    const topic = topicsData.find((t) => t.dimension === dim);
     return {
       dimension: dim,
       title: topic?.title ?? `Untitled (${dim})`,
     };
   });
 
-  // --- Fetch latest user answers ---
-  const { data: answersData } = await supabase
-    .from("user_answers")
-    .select("answers")
-    .eq("username", email)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  const userAnswers = answersData?.answers || [];
-
+  // Build progress data
   const progressData: ProgressData[] = uniqueDimensions.map((dim) => {
     const userDim = userAnswers.find((ua: any) => ua.dimension_id === dim);
     const answeredYes = userDim

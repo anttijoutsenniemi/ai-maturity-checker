@@ -20,12 +20,12 @@ type CapabilityLevel = {
 };
 
 type Props = {
-  email?: string;
-  topics?: Topic[];
-  capabilityLevels?: CapabilityLevel[];
-  currentLevels?: string[];
-  gapLevels?: string[];
-  priorityLevels?: string[];
+  email: string;
+  topics: Topic[];
+  capabilityLevels: CapabilityLevel[];
+  currentLevels: string[];
+  gapLevels: string[];
+  priorityLevels: string[];
 };
 
 export default function AiProfileClient({
