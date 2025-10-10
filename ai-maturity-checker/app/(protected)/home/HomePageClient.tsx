@@ -10,13 +10,16 @@ import { useEffect } from "react";
 
 interface HomePageProps {
   email: string;
-  totalDimensions: number;
+  totalDimensions?: number;
 }
 
 export default function HomePage({ email, totalDimensions }: HomePageProps) {
+  if(!totalDimensions){
+    totalDimensions = 1;
+  }
   const { completedSteps, completeStep, mounted } = useStepsProgress(email);
+  
   const { allDimensionsCompleted } = useDimensionsProgress(email, totalDimensions);
-
   // Auto-mark step 1 complete if all dimensions are completed
   useEffect(() => {
     if (allDimensionsCompleted) {
