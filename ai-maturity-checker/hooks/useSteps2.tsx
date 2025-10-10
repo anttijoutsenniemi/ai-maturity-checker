@@ -88,7 +88,7 @@ export function useStepsProgress(username: string) {
 
   useEffect(() => {
     if (!mounted || !storageKey) return;
-    console.log(` Saving completed steps for ${username}:`, completedSteps);
+    console.log(` Saving completed steps:`, completedSteps);
     localStorage.setItem(storageKey, JSON.stringify(completedSteps));
   }, [completedSteps, mounted, storageKey, username]);
 
