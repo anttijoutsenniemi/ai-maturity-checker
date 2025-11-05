@@ -36,6 +36,8 @@ The goal is to make AI transformation measurable, structured, and personalized.
 Every page is also first initialized as a Next server component that fetches data by using serversupaclient, a client compo is then rendered
 using the data making for a secure app structure.
 
+To setup new db in supabase use the web supa sql editor and paste in the sql's from folder "sql_tables". Make sure to also turn off emailconfirmation for new users in supabase web settings. This allows users to use the coded in signup functionality.
+
 ### Process Flow
 
 | Step | Title | Description |
